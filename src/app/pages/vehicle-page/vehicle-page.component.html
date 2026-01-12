@@ -1,0 +1,61 @@
+<div class="container py-3">
+  <h2>
+    <i class="bi bi-car-front me-2"></i>
+    Paramètres véhicule
+  </h2>
+
+  <form class="row g-3">
+
+    <div class="col-md-3">
+      <label class="form-label">Masse (kg)</label>
+      <input
+        type="number"
+        class="form-control"
+        [(ngModel)]="cfg.massKg"
+        name="massKg">
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Crr</label>
+      <input
+        type="number"
+        step="0.0001"
+        class="form-control"
+        [(ngModel)]="cfg.crr"
+        name="crr">
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">CdA</label>
+      <input
+        type="number"
+        step="0.001"
+        class="form-control"
+        [(ngModel)]="cfg.cdA"
+        name="cdA">
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Rayon roue (m)</label>
+      <input
+        type="number"
+        step="0.001"
+        class="form-control"
+        [(ngModel)]="cfg.wheelRadiusM"
+        name="wheelRadiusM">
+    </div>
+
+    <div class="col-12">
+      <button type="button" class="btn btn-primary me-2" (click)="save()">
+        <i class="bi bi-save me-1"></i>
+        Enregistrer
+      </button>
+
+      <button type="button" class="btn btn-outline-secondary" (click)="load()">
+        <i class="bi bi-arrow-clockwise me-1"></i>
+        Charger
+      </button>
+    </div>
+
+  </form>
+</div>

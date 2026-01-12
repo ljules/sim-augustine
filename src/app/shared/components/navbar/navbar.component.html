@@ -1,0 +1,48 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/simulation">
+      <i class="bi bi-lightning-charge-fill me-2"></i>
+      Simu Augustine
+    </a>
+
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+            aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNavbar">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/circuit" routerLinkActive="active">
+            <i class="bi bi-map me-1"></i> Circuit
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/vehicule" routerLinkActive="active">
+            <i class="bi bi-car-front me-1"></i> Véhicule
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/strategie" routerLinkActive="active">
+            <i class="bi bi-sliders me-1"></i> Stratégie
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/simulation" routerLinkActive="active">
+            <i class="bi bi-play-fill me-1"></i> Simulation
+          </a>
+        </li>
+
+      </ul>
+
+      <span class="navbar-text small text-secondary">
+        MVP (dt = 0,2 s)
+      </span>
+    </div>
+  </div>
+</nav>
