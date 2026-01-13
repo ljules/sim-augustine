@@ -1,2 +1,3 @@
-Placer l'ensemble des pages dans le router
-Créer la navbar pour la navigation interpage
+Ajouter le composant SpeedChartComponent
+Tester la simulation
+Ajouter l'export csv des résultats.

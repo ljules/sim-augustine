@@ -5,7 +5,7 @@ export class Circuit {
 
   // interpolation linéaire altitude(s)
   altitudeAt(s: number): number {
-    const { s: xs, altitude: zs } = this.profile;
+    const { s: xs, z: zs } = this.profile;
     if (s <= xs[0]) return zs[0];
     const last = xs.length - 1;
     if (s >= xs[last]) return zs[last];

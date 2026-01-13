@@ -66,6 +66,11 @@ ng g component shared/components/file-drop --standalone
 ng g component shared/components/chart-panel --standalone
 ng g component shared/components/kpi-cards --standalone
 ng g component shared/components/footer --standalone
+ng g component shared/components/altitude-chart --standalone
+ng g component shared/components/grade-chart --standalone
+ng g component shared/components/strategy-timeline --standalone
+ng g component shared/components/speed-chart --standalone
+
 ```
 
 #### Génération des services (état + persistance avec *local storage*) :
@@ -76,6 +81,7 @@ ng g service core/services/vehicle-store
 ng g service core/services/strategy-store
 ng g service core/services/simulation-store
 ng g service core/services/export
+ng g service core/services/circuit-csv-parser
 
 ```
 
@@ -107,8 +113,8 @@ touch src/app/domain/vehicle/motor.ts
 touch src/app/domain/vehicle/vehicle.ts
 touch src/app/domain/solver/euler.ts
 touch src/app/domain/solver/rk4.ts
-touch src/app/domain/strategy/onoff.ts
-touch src/app/domain/simulation/simulate.ts
+touch src/app/domain/strategy/interval-strategy.ts
+touch src/app/domain/simulation/simulate-intervals.ts
 ```
 
 ou avec **PowerShell** :
@@ -119,8 +125,8 @@ ni src\app\domain\vehicle\motor.ts -ItemType File
 ni src\app\domain\vehicle\vehicle.ts -ItemType File
 ni src\app\domain\solver\euler.ts -ItemType File
 ni src\app\domain\solver\rk4.ts -ItemType File
-ni src\app\domain\strategy\onoff.ts -ItemType File
-ni src\app\domain\simulation\simulate.ts -ItemType File
+ni src\app\domain\strategy\interval-strategy.ts -ItemType File
+ni src\app\domain\simulation\simulate-intervals.ts -ItemType File
 ```
 
 ## Autres bibliothèques :
@@ -132,4 +138,10 @@ Pour lire les `.csv` nous allons nous appuye sur la bibliothèque `PapaParse`, l
 ``` sh
 npm i papaparse
 npm i -D @types/papaparse
+```
+
+### Chart.js (affichage des graphiques) :
+
+``` sh
+npm i chart.js
 ```

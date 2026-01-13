@@ -1,49 +1,60 @@
 import { Circuit } from '../circuit/circuit';
-import { Motor } from '../vehicle/motor';
 import { Vehicle } from '../vehicle/vehicle';
+import { IntervalStrategy } from '../strategy/interval-strategy';
 import { SimPoint, SimResult } from '../types';
-import { OnOffStrategy } from '../strategy/onoff';
 
-type State = { s: number; v: number; e: number }; // position, vitesse, énergie cumulée
-
-export function simulateEuler(
+/**
+ * Euler dt fixe, modèle sans inductance.
+ */
+export function simulateEulerIntervals(
   circuit: Circuit,
   vehicle: Vehicle,
-  motor: Motor,
-  strategy: OnOffStrategy,
+  strategy: IntervalStrategy,
   dt: number,
   tMax: number
 ): SimResult {
-  strategy.reset();
-
   const points: SimPoint[] = [];
+
   let t = 0;
-  let st: State = { s: 0, v: 0, e: 0 };
+  let s = 0;
+  let v = 0;
+  let eJ = 0;
 
   const sEnd = circuit.maxDistance();
+  const Vmax = vehicle.motor.cfg.maxVoltage;
 
-  while (t <= tMax && st.s < sEnd) {
-    const alpha = circuit.alphaAt(st.s);
-    const pwm = strategy.pwmFor(st.v);
+  while (t <= tMax && s < sEnd) {
+    const alpha = circuit.alphaAt(s);
+    const pwm = strategy.pwmForDistance(s);
+    const u_mot = pwm * Vmax;
 
-    const { i, tauWheel } = motor.compute(pwm, st.v, (vehicle as any).cfg?.wheelRadiusM ?? 0.25);
-    const a = vehicle.accel(st.v, tauWheel, alpha);
+    const { dv_dt, dx_dt, i } = vehicle.stepNoInductance(u_mot, alpha, v);
 
-    const vNext = Math.max(0, st.v + a * dt);
-    const sNext = st.s + st.v * dt; // Euler explicite
-    const Vmax = (motor as any).cfg?.maxVoltage ?? 0;
-    const pElec = i * (pwm * Vmax);
-    const eNext = st.e + Math.max(0, pElec) * dt;
+    // intégration Euler
+    const vNext = Math.max(0, v + dv_dt * dt);
+    const sNext = s + dx_dt * dt;
+
+    // puissance/énergie électrique (approx)
+    const pElec = i * u_mot;
+    eJ += Math.max(0, pElec) * dt;
 
     points.push({
-      t, s: st.s, v: st.v, i, pwm,
+      t,
+      s,
+      v,
+      i,
+      pwm,
       alphaRad: alpha,
       pElec,
-      eElec: st.e,
+      eElec: eJ,
     });
 
-    st = { s: sNext, v: vNext, e: eNext };
+    v = vNext;
+    s = sNext;
     t += dt;
+
+    // sécurité anti boucle infinie si v=0 et pwm=0
+    if (points.length > 5 && v === 0 && pwm === 0) break;
   }
 
   const totalTime = points.length ? points[points.length - 1].t : 0;
@@ -55,38 +66,36 @@ export function simulateEuler(
 }
 
 /**
- * RK4 sur l’état (s,v). Énergie estimée sur le pas (moyenne simple).
- * Pour MVP: on garde le calcul moteur "quasi-statique".
+ * RK4 dt fixe, modèle sans inductance.
+ * Remarque: u_mot dépend de s (via strategy), donc on recalc à chaque évaluation.
  */
-export function simulateRK4(
+export function simulateRK4Intervals(
   circuit: Circuit,
   vehicle: Vehicle,
-  motor: Motor,
-  strategy: OnOffStrategy,
+  strategy: IntervalStrategy,
   dt: number,
   tMax: number
 ): SimResult {
-  strategy.reset();
-
   const points: SimPoint[] = [];
+
   let t = 0;
   let s = 0;
   let v = 0;
-  let e = 0;
+  let eJ = 0;
 
   const sEnd = circuit.maxDistance();
+  const Vmax = vehicle.motor.cfg.maxVoltage;
 
   const deriv = (sLocal: number, vLocal: number) => {
     const alpha = circuit.alphaAt(sLocal);
-    const pwm = strategy.pwmFor(vLocal);
-    const { i, tauWheel } = motor.compute(pwm, vLocal, (vehicle as any).cfg?.wheelRadiusM ?? 0.25);
-    const a = vehicle.accel(vLocal, tauWheel, alpha);
-    return { ds: vLocal, dv: a, alpha, pwm, i };
+    const pwm = strategy.pwmForDistance(sLocal);
+    const u_mot = pwm * Vmax;
+
+    const { dv_dt, dx_dt, i } = vehicle.stepNoInductance(u_mot, alpha, vLocal);
+    return { ds: dx_dt, dv: dv_dt, alpha, pwm, u_mot, i };
   };
 
   while (t <= tMax && s < sEnd) {
-    // dérivées RK4 (attention: la stratégie a de l’état => pour MVP on l’applique sur v "courant"
-    // et on accepte la petite approximation. On rendra la stratégie "pure" plus tard si besoin.)
     const k1 = deriv(s, v);
     const k2 = deriv(s + 0.5 * dt * k1.ds, v + 0.5 * dt * k1.dv);
     const k3 = deriv(s + 0.5 * dt * k2.ds, v + 0.5 * dt * k2.dv);
@@ -95,21 +104,26 @@ export function simulateRK4(
     const sNext = s + (dt / 6) * (k1.ds + 2 * k2.ds + 2 * k3.ds + k4.ds);
     const vNext = Math.max(0, v + (dt / 6) * (k1.dv + 2 * k2.dv + 2 * k3.dv + k4.dv));
 
-    // puissance/énergie (approx) sur base k1
-    const Vmax = (motor as any).cfg?.maxVoltage ?? 0;
-    const pElec = k1.i * (k1.pwm * Vmax);
-    e += Math.max(0, pElec) * dt;
+    // énergie : on prend la puissance du point courant (k1) en approximation
+    const pElec = k1.i * k1.u_mot;
+    eJ += Math.max(0, pElec) * dt;
 
     points.push({
-      t, s, v, i: k1.i, pwm: k1.pwm,
+      t,
+      s,
+      v,
+      i: k1.i,
+      pwm: k1.pwm,
       alphaRad: k1.alpha,
       pElec,
-      eElec: e,
+      eElec: eJ,
     });
 
     s = sNext;
     v = vNext;
     t += dt;
+
+    if (points.length > 5 && v === 0 && k1.pwm === 0) break;
   }
 
   const totalTime = points.length ? points[points.length - 1].t : 0;

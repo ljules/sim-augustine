@@ -1,0 +1,87 @@
+<div class="timeline card">
+  <div class="card-body">
+
+    <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+      <div>
+        <div class="fw-semibold">
+          <i class="bi bi-sliders me-2"></i>
+          Intervalles ON moteur (D → F)
+        </div>
+        <div class="text-muted small">
+          Glisser D / F ou le segment rouge. Unités : mètres.
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-sm btn-outline-primary" (click)="addInterval()">
+          <i class="bi bi-plus-lg me-1"></i> Ajouter
+        </button>
+      </div>
+    </div>
+
+    <div class="mt-3 track-wrap">
+      <div
+        #track
+        class="track"
+        (pointermove)="onPointerMove($event)"
+        (pointerup)="onPointerUp($event)"
+        (pointercancel)="onPointerUp($event)"
+      >
+        <!-- Ligne de base -->
+        <div class="baseline"></div>
+
+        <!-- Intervalles -->
+        <ng-container *ngFor="let it of intervals; let i = index">
+          <!-- Segment rouge -->
+          <div
+            class="segment"
+            [style.left.%]="percentFromM(it.d)"
+            [style.width.%]="percentFromM(it.f) - percentFromM(it.d)"
+            (pointerdown)="onPointerDownSegment($event, i)"
+            title="Glisser le segment"
+          ></div>
+
+          <!-- Handle D -->
+          <div
+            class="handle handle-d"
+            [style.left.%]="percentFromM(it.d)"
+            (pointerdown)="onPointerDownHandle($event, i, 'd')"
+            title="Départ ON"
+          >
+            <span class="badge badge-d">D</span>
+            <div class="handle-value">{{ it.d | number:'1.0-0' }}</div>
+          </div>
+
+          <!-- Handle F -->
+          <div
+            class="handle handle-f"
+            [style.left.%]="percentFromM(it.f)"
+            (pointerdown)="onPointerDownHandle($event, i, 'f')"
+            title="Fin ON"
+          >
+            <span class="badge badge-f">F</span>
+            <div class="handle-value">{{ it.f | number:'1.0-0' }}</div>
+          </div>
+
+          <!-- Bouton supprimer -->
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-danger btn-remove"
+            [style.left.%]="percentFromM((it.d + it.f) / 2)"
+            (click)="removeInterval(i)"
+            title="Supprimer l'intervalle"
+          >
+            <i class="bi bi-trash"></i>
+          </button>
+        </ng-container>
+      </div>
+
+      <div class="d-flex justify-content-between text-muted small mt-1">
+        <div>0 m</div>
+        <div>{{ distanceMax | number:'1.0-0' }} m</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+

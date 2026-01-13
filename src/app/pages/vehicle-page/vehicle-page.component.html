@@ -1,61 +1,160 @@
 <div class="container py-3">
-  <h2>
+  <h2 class="mb-3">
     <i class="bi bi-car-front me-2"></i>
-    Paramètres véhicule
+    Véhicule & Moteur (modèle Python)
   </h2>
 
-  <form class="row g-3">
+  <div *ngIf="message" class="alert alert-success py-2">
+    <i class="bi bi-check-circle me-2"></i>{{ message }}
+  </div>
 
-    <div class="col-md-3">
-      <label class="form-label">Masse (kg)</label>
-      <input
-        type="number"
-        class="form-control"
-        [(ngModel)]="cfg.massKg"
-        name="massKg">
+  <!-- MOTEUR -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title mb-3">
+        <i class="bi bi-lightning-charge me-2"></i>
+        Moteur (Maxon RE50 48V)
+      </h5>
+
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Tension max (V)</label>
+          <input class="form-control" type="number" step="0.1"
+                 [(ngModel)]="cfg.motor.maxVoltage" name="maxVoltage">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">ku ((tr/min)/V)</label>
+          <input class="form-control" type="number" step="0.1"
+                 [(ngModel)]="cfg.motor.kuRpmPerV" name="kuRpmPerV"
+                 (ngModelChange)="onKuChanged()">
+          <div class="form-text">ke est recalculé automatiquement.</div>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">ke (V/(rad/s))</label>
+          <input class="form-control" type="number" step="0.000001"
+                 [(ngModel)]="cfg.motor.ke" name="ke" disabled>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">kc (Nm/A)</label>
+          <input class="form-control" type="number" step="0.0001"
+                 [(ngModel)]="cfg.motor.kc" name="kc">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">rm (Ω)</label>
+          <input class="form-control" type="number" step="0.001"
+                 [(ngModel)]="cfg.motor.rm" name="rm">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">lm (H)</label>
+          <input class="form-control" type="number" step="0.000001"
+                 [(ngModel)]="cfg.motor.lm" name="lm">
+          <div class="form-text">Ignorée en MVP (sans inductance).</div>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">jm (kg·m²)</label>
+          <input class="form-control" type="number" step="0.0000001"
+                 [(ngModel)]="cfg.motor.jm" name="jm">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">fvm (Nm·s/rad)</label>
+          <input class="form-control" type="number" step="0.0000001"
+                 [(ngModel)]="cfg.motor.fvm" name="fvm">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">cs (Nm)</label>
+          <input class="form-control" type="number" step="0.0001"
+                 [(ngModel)]="cfg.motor.cs" name="cs">
+        </div>
+      </div>
     </div>
+  </div>
 
-    <div class="col-md-3">
-      <label class="form-label">Crr</label>
-      <input
-        type="number"
-        step="0.0001"
-        class="form-control"
-        [(ngModel)]="cfg.crr"
-        name="crr">
+  <!-- VEHICULE -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title mb-3">
+        <i class="bi bi-gear me-2"></i>
+        Véhicule
+      </h5>
+
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">m (kg)</label>
+          <input class="form-control" type="number" step="0.1"
+                 [(ngModel)]="cfg.vehicle.m" name="m">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">g (m/s²)</label>
+          <input class="form-control" type="number" step="0.01"
+                 [(ngModel)]="cfg.vehicle.g" name="g">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">fs (roulement)</label>
+          <input class="form-control" type="number" step="0.0001"
+                 [(ngModel)]="cfg.vehicle.fs" name="fs">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">fv (N·s/m)</label>
+          <input class="form-control" type="number" step="0.0001"
+                 [(ngModel)]="cfg.vehicle.fv" name="fv">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">rho (kg/m³)</label>
+          <input class="form-control" type="number" step="0.01"
+                 [(ngModel)]="cfg.vehicle.rho" name="rho">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">S (m²)</label>
+          <input class="form-control" type="number" step="0.001"
+                 [(ngModel)]="cfg.vehicle.s" name="s">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">Cx</label>
+          <input class="form-control" type="number" step="0.0001"
+                 [(ngModel)]="cfg.vehicle.cx" name="cx">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">r_red</label>
+          <input class="form-control" type="number" step="0.0001"
+                 [(ngModel)]="cfg.vehicle.r_red" name="r_red">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">r_roue (m)</label>
+          <input class="form-control" type="number" step="0.001"
+                 [(ngModel)]="cfg.vehicle.r_roue" name="r_roue">
+        </div>
+      </div>
     </div>
+  </div>
 
-    <div class="col-md-3">
-      <label class="form-label">CdA</label>
-      <input
-        type="number"
-        step="0.001"
-        class="form-control"
-        [(ngModel)]="cfg.cdA"
-        name="cdA">
-    </div>
+  <!-- Actions -->
+  <div class="d-flex gap-2 flex-wrap">
+    <button type="button" class="btn btn-primary" (click)="save()">
+      <i class="bi bi-save me-1"></i> Enregistrer
+    </button>
 
-    <div class="col-md-3">
-      <label class="form-label">Rayon roue (m)</label>
-      <input
-        type="number"
-        step="0.001"
-        class="form-control"
-        [(ngModel)]="cfg.wheelRadiusM"
-        name="wheelRadiusM">
-    </div>
+    <button type="button" class="btn btn-outline-secondary" (click)="reload()">
+      <i class="bi bi-arrow-clockwise me-1"></i> Recharger
+    </button>
 
-    <div class="col-12">
-      <button type="button" class="btn btn-primary me-2" (click)="save()">
-        <i class="bi bi-save me-1"></i>
-        Enregistrer
-      </button>
-
-      <button type="button" class="btn btn-outline-secondary" (click)="load()">
-        <i class="bi bi-arrow-clockwise me-1"></i>
-        Charger
-      </button>
-    </div>
-
-  </form>
+    <button type="button" class="btn btn-outline-danger" (click)="resetDefaults()">
+      <i class="bi bi-trash me-1"></i> Réinitialiser (défauts Python)
+    </button>
+  </div>
 </div>
