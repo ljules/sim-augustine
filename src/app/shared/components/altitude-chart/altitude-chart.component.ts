@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, AfterViewInit, ElementRef, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild } from '@angular/core';
 import { Chart, ChartConfiguration, LineController, LineElement, PointElement, LinearScale, CategoryScale,
     Tooltip, Legend } from 'chart.js';
@@ -10,7 +11,7 @@ Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryS
 @Component({
   selector: 'app-altitude-chart',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './altitude-chart.component.html',
   styleUrl: './altitude-chart.component.css'
 })
@@ -72,7 +73,7 @@ export class AltitudeChartComponent implements AfterViewInit, OnChanges, OnDestr
         maintainAspectRatio: false,
         animation: false,
         plugins: {
-          legend: { display: true },
+          legend: { display: false },
           tooltip: { enabled: true },
           title: { display: true, text: this.title },
         },

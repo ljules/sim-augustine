@@ -70,6 +70,9 @@ ng g component shared/components/altitude-chart --standalone
 ng g component shared/components/grade-chart --standalone
 ng g component shared/components/strategy-timeline --standalone
 ng g component shared/components/speed-chart --standalone
+ng g component shared/components/current-chart --standalone
+ng g component shared/components/energy-chart --standalone
+ng g component shared/components/CircuitMapComponent --standalone
 
 ```
 

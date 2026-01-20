@@ -1,90 +1,138 @@
 <div class="container py-3">
-  <h2 class="mb-3">
-    <i class="bi bi-play-fill me-2"></i>
-    Simulation
-  </h2>
+    <h2 class="mb-3">
+        <i class="bi bi-play-fill me-2"></i>
+        Simulation
+    </h2>
 
-  <div *ngIf="error" class="alert alert-danger">
-    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
-  </div>
-
-  <div class="card mb-3">
-    <div class="card-body">
-
-      <div class="row g-3 align-items-end">
-        <div class="col-md-3">
-          <label class="form-label fw-semibold">dt (s)</label>
-          <input class="form-control" type="number" [(ngModel)]="dt" name="dt" disabled>
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label fw-semibold">tMax (s)</label>
-          <input class="form-control" type="number" [(ngModel)]="tMax" name="tMax">
-        </div>
-
-        <div class="col-md-6 d-flex gap-2">
-          <button class="btn btn-primary" type="button" (click)="simulate('Euler')">
-            <i class="bi bi-lightning me-1"></i> Simuler (Euler)
-          </button>
-
-          <button class="btn btn-outline-primary" type="button" (click)="simulate('RK4')">
-            <i class="bi bi-lightning-charge me-1"></i> Simuler (RK4)
-          </button>
-        </div>
-      </div>
-
+    <div *ngIf="error" class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
     </div>
-  </div>
 
-  <div *ngIf="result as r" class="card">
-    <div class="card-body">
+    <div class="card mb-3">
+        <div class="card-body">
 
-      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-        <h5 class="mb-0">
-          Résultats
-          <span class="badge text-bg-secondary ms-2">{{ lastMethod }}</span>
-        </h5>
-      </div>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">dt (s)</label>
+                    <input class="form-control" type="number" [(ngModel)]="dt" name="dt" disabled>
+                </div>
 
-      <div class="row g-3">
-        <div class="col-md-3 col-6">
-          <div class="fw-semibold">Temps total</div>
-          <div>{{ r.totalTime | number:'1.1-1' }} s</div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">tMax (s)</label>
+                    <input class="form-control" type="number" [(ngModel)]="tMax" name="tMax">
+                </div>
+
+                <div class="col-md-6 d-flex gap-2">
+                    <button class="btn btn-primary" type="button" (click)="simulate('Euler')">
+                        <i class="bi bi-lightning me-1"></i> Simuler (Euler)
+                    </button>
+
+                    <button class="btn btn-outline-primary" type="button" (click)="simulate('RK4')">
+                        <i class="bi bi-lightning-charge me-1"></i> Simuler (RK4)
+                    </button>
+                </div>
+            </div>
+
         </div>
-
-        <div class="col-md-3 col-6">
-          <div class="fw-semibold">Distance</div>
-          <div>{{ r.totalDistance | number:'1.0-0' }} m</div>
-        </div>
-
-        <div class="col-md-3 col-6">
-          <div class="fw-semibold">Vitesse moyenne</div>
-          <div>{{ r.vAvg | number:'1.2-2' }} m/s</div>
-        </div>
-
-        <div class="col-md-3 col-6">
-          <div class="fw-semibold">Énergie</div>
-          <div>
-            {{ r.totalEnergyJ | number:'1.0-0' }} J
-            <span class="text-muted">({{ energyWh | number:'1.2-2' }} Wh)</span>
-          </div>
-        </div> 
-        
-        <!-- Affichage de la courbe vitesse(distance): -->
-        <h5 class="card-title mb-3">
-            <i class="bi bi-graph-up me-2"></i>
-            Vitesse en fonction de la distance
-        </h5>
-
-        <app-speed-chart
-            [points]="r.points"
-            [title]="'v(s) — ' + (lastMethod ?? '')">
-        </app-speed-chart>
-        
-      </div>
-
-
-
     </div>
-  </div>
-</div>
+
+
+    <!-- AFFICHAGE DES RESULTATS  -->
+    <div *ngIf="result as r" class="card">
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <h5 class="mb-0">
+                    Résultats
+                    <span class="badge text-bg-secondary ms-2">{{ lastMethod }}</span>
+                </h5>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Temps total</div>
+                    <div>{{ totalTimeLabel }}</div>
+
+                </div>
+
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Distance</div>
+                    <div>{{ r.totalDistance | number:'1.0-0' }} m</div>
+                </div>
+
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Vitesse moyenne</div>
+                    <div>{{ vAvgLabel }}</div>
+
+                </div>
+
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Énergie</div>
+                    <div>
+                        {{ r.totalEnergyJ | number:'1.0-0' }} J
+                        <span class="text-muted">({{ energyWh | number:'1.2-2' }} Wh)</span>
+                    </div>
+                </div>
+
+
+                <!-- Altitude -->
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">
+                            <i class="bi bi-graph-up me-2"></i>
+                            Altitude en fonction de la distance
+                        </h5>
+
+                        <app-altitude-chart [s]="circuitProfile!.s" [z]="circuitProfile!.z">
+                        </app-altitude-chart>
+                    </div>
+                </div>
+
+                <!-- Sélecteur unité vitesse (km/h) ou (m/s) -->
+                <div class="border rounded p-3">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="unitSwitch" [(ngModel)]="speedUnit"
+                                [ngModelOptions]="{standalone: true}"
+                                (ngModelChange)="speedUnit = $event ? 'kmh' : 'mps'">
+                            <label class="form-check-label" for="unitSwitch">
+                                Afficher en km/h
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Affichage de la courbe vitesse(distance): -->
+                    <h5 class="card-title mb-3">
+                        <i class="bi bi-graph-up me-2"></i>
+                        Vitesse en fonction de la distance
+                    </h5>
+
+                    <app-speed-chart [points]="r.points" [intervals]="strategyIntervals" [distanceMax]="r.totalDistance"
+                        [title]="'v(s) — ' + (lastMethod ?? '')" [unit]="speedUnit">
+                    </app-speed-chart>
+                </div>
+
+                <!-- Courant -->
+                <div *ngIf="result as r" class="card mt-3">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">
+                            <i class="bi bi-lightning me-2"></i>
+                            Courant en fonction de la distance
+                        </h5>
+                        <app-current-chart [points]="r.points"></app-current-chart>
+                    </div>
+                </div>
+
+                <div *ngIf="result as r" class="mt-3 border rounded p-3">
+                    <h5 class="card-title mb-3">
+                        <i class="bi bi-battery-half me-2"></i>
+                        Énergie cumulée en fonction de la distance
+                    </h5>
+
+                    <app-energy-chart [points]="r.points"></app-energy-chart>
+                </div>
+
+
+            </div>
+        </div>
+    </div>

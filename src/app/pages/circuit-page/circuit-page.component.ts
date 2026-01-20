@@ -5,11 +5,15 @@ import { CircuitProfile } from '../../domain/types';
 import { CommonModule } from '@angular/common';
 import { AltitudeChartComponent } from '../../shared/components/altitude-chart/altitude-chart.component';
 import { GradeChartComponent } from '../../shared/components/grade-chart/grade-chart.component';
+import { CircuitMapComponent } from '../../shared/components/circuit-map-component/circuit-map-component.component';
+import { StrategyStoreService } from '../../core/services/strategy-store.service';
+import type { StrategyConfig } from '../../domain/types';
+
 
 @Component({
   selector: 'app-circuit-page',
   standalone: true,
-  imports: [CommonModule, AltitudeChartComponent, GradeChartComponent],
+  imports: [CommonModule, AltitudeChartComponent, GradeChartComponent, CircuitMapComponent],
   templateUrl: './circuit-page.component.html',
   styleUrl: './circuit-page.component.css'
 })
@@ -18,6 +22,7 @@ import { GradeChartComponent } from '../../shared/components/grade-chart/grade-c
 
 export class CircuitPageComponent {
     circuit: CircuitProfile | null = null;
+    strategyConfig: StrategyConfig;
     error: string | null = null;
 
     // Stats (calculées côté TS pour éviter Math.min/max dans le template)
@@ -27,7 +32,7 @@ export class CircuitPageComponent {
     zMax: number | null = null;
 
     // Optionnel : nom “humain” si tu veux l’afficher même quand le fichier s’appelle autrement
-    defaultCircuitName = 'Silesia Ring';
+    //defaultCircuitName = this.circuit?.name ?? 'Nom du fichier chargé...';
 
     // KPI
     gradeMinPct: number | null = null;
@@ -37,12 +42,15 @@ export class CircuitPageComponent {
 
     constructor(
         private parser: CircuitCsvParserService,
+        private strategyStore: StrategyStoreService,
         private store: CircuitStoreService
     ) {
         const existing = this.store.getCircuit();
         if (existing) {
         this.setCircuit(existing);
         }
+
+        this.strategyConfig = this.strategyStore.get();
     }
 
     async onFileSelected(ev: Event): Promise<void> {
@@ -53,7 +61,7 @@ export class CircuitPageComponent {
         if (!file) return;
 
         try {
-        const profile = await this.parser.parseShellCsv(file, this.defaultCircuitName);
+        const profile = await this.parser.parseShellCsv(file);
         this.store.setCircuit(profile);
         this.setCircuit(profile);
         } catch (e: unknown) {

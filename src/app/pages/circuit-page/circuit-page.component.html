@@ -37,7 +37,7 @@
 
       <h5 class="card-title mb-3">
         <i class="bi bi-geo-alt-fill me-2"></i>
-        {{ c.name }}
+        Nom du fichier : {{ c.name }}
       </h5>
 
       <div class="row g-3">
@@ -91,6 +91,24 @@
 
     </div>
   </div>
+
+
+  <!-- Tracé du circuit -->
+<div *ngIf="circuit as c" class="card">
+  <div class="card-header">Vue 2D du circuit</div>
+  <div class="card-body" style="height: 420px">
+    <app-circuit-map-component
+      [s]="c.s"
+      [utmX]="c.utmX"
+      [utmY]="c.utmY"
+      [intervals]="strategyConfig.intervals"
+      [keepEveryMeters]="1"
+    />
+  </div>
+</div>
+
+
+
 
   <!-- Graphes -->
   <div *ngIf="circuit as c" class="card mt-3">

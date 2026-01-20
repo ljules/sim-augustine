@@ -1,0 +1,41 @@
+ <svg
+    [attr.viewBox]="'0 0 ' + width + ' ' + height"
+    [attr.width]="width"
+    [attr.height]="height"
+    style="width: 100%; height: 100%; display:block;"
+  >
+    <!-- Circuit complet -->
+    <path
+      [attr.d]="circuitPath"
+      fill="none"
+      stroke="currentColor"
+      stroke-opacity="0.85"
+      stroke-width="8"
+      vector-effect="non-scaling-stroke"
+    ></path>
+
+    <!-- Segments en rouge -->
+    <ng-container *ngFor="let d of highlightPaths">
+      <path
+        [attr.d]="d"
+        fill="none"
+        stroke="red"
+        stroke-width="8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        vector-effect="non-scaling-stroke"
+      ></path>
+    </ng-container>
+
+    <!-- Start/Finish (premier point) -->
+    <circle
+      *ngIf="start"
+      [attr.cx]="start.x"
+      [attr.cy]="start.y"
+      r="8"
+      fill="lime"
+      stroke="black"
+      stroke-width="1"
+      vector-effect="non-scaling-stroke"
+    ></circle>
+  </svg>
