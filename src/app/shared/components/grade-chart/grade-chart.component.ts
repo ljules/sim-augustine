@@ -87,6 +87,8 @@ export class GradeChartComponent implements AfterViewInit, OnChanges, OnDestroy 
             data: ys,
             tension: 0.15,
             pointRadius: 0,
+            borderColor: '#8f11c0ff',
+            borderWidth: 2,
           },
         ],
       },
@@ -103,10 +105,29 @@ export class GradeChartComponent implements AfterViewInit, OnChanges, OnDestroy 
           x: {
             title: { display: true, text: 'Distance (m)' },
             ticks: { maxTicksLimit: 12 },
+            grid: {                    
+                    color: '#b6b6b6ff',      // Couleur des lignes de grille
+                    lineWidth: 1,              // Épaisseur des lignes de grille
+            },
+          border: {
+            color: '#777777ff',             // Couleur de l'axe X
+            width: 2,                         // Epaisseur de l'axe X
+            dash: [4, 4],
+          },
           },
           y: {
             title: { display: true, text: 'Pente (%)' },
             ticks: { maxTicksLimit: 8 },
+            grid : {
+                    color: (context: any) => { return context.tick.value == 0 ? '#777777ff'  : '#b6b6b6ff'},
+                    lineWidth: (context: any) => { return context.tick.value == 0 ? 2 : 1},
+                        
+            },
+          border: {
+            color: '#777777ff',
+            width: 2,
+            dash: (context: any) => { return context.tick.value == 0 ? []  : [4, 4]},            
+          },
           },
         },
       },

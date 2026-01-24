@@ -1,46 +1,46 @@
 import { CommonModule } from '@angular/common';
 import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnDestroy,
-  SimpleChanges,
-  ViewChild,
+    AfterViewInit,
+    Component,
+    ElementRef,
+    Input,
+    OnChanges,
+    OnDestroy,
+    SimpleChanges,
+    ViewChild,
 } from '@angular/core';
 
 import {
-  Chart,
-  ChartConfiguration,
-  LineController,
-  LineElement,
-  PointElement,
-  LinearScale,
-  CategoryScale,
-  Tooltip,
-  Legend,
+    Chart,
+    ChartConfiguration,
+    LineController,
+    LineElement,
+    PointElement,
+    LinearScale,
+    CategoryScale,
+    Tooltip,
+    Legend,
 } from 'chart.js';
 
 Chart.register(
-  LineController,
-  LineElement,
-  PointElement,
-  LinearScale,
-  CategoryScale,
-  Tooltip,
-  Legend
+    LineController,
+    LineElement,
+    PointElement,
+    LinearScale,
+    CategoryScale,
+    Tooltip,
+    Legend
 );
 
 type PointSV = { s: number; v: number };
 type Interval = { d: number; f: number };
 
 @Component({
-  selector: 'app-speed-chart',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './speed-chart.component.html',
-  styleUrl: './speed-chart.component.css'
+    selector: 'app-speed-chart',
+    standalone: true,
+    imports: [CommonModule],
+    templateUrl: './speed-chart.component.html',
+    styleUrl: './speed-chart.component.css'
 })
 
 
@@ -116,7 +116,7 @@ export class SpeedChartComponent
                         tension: 0.15,
                         pointRadius: 0,
                         borderColor: '#198754',   // vert Bootstrap
-                        borderWidth: 2,
+                        borderWidth: 3,
                     },
                 ],
             },
@@ -133,10 +133,28 @@ export class SpeedChartComponent
                     x: {
                         title: { display: true, text: 'Distance (m)' },
                         ticks: { maxTicksLimit: 12 },
+                        grid: {
+                            color: '#b6b6b6ff',      // Couleur des lignes de grille
+                            lineWidth: 1,              // Épaisseur des lignes de grille
+                        },
+                        border: {
+                            color: '#777777ff',             // Couleur de l'axe X
+                            width: 2,                         // Epaisseur de l'axe X
+                            dash: [4, 4],
+                        },
                     },
                     y: {
-                    title: { display: true, text: yLabel },
-                    ticks: { maxTicksLimit: 8 },
+                        title: { display: true, text: yLabel },
+                        ticks: { maxTicksLimit: 8 },
+                        grid: {
+                            color: '#b6b6b6ff',      // Couleur des lignes de grille
+                            lineWidth: 1,              // Épaisseur des lignes de grille
+                        },
+                        border: {
+                            color: '#777777ff',             // Couleur de l'axe X
+                            width: 2,                         // Epaisseur de l'axe X
+                            dash: [4, 4],
+                        },
                     },
 
                 },

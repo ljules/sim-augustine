@@ -81,8 +81,30 @@ export class CurrentChartComponent implements AfterViewInit, OnChanges, OnDestro
           
         },
         scales: {
-          x: { title: { display: true, text: 'Distance (m)' }, ticks: { maxTicksLimit: 12 } },
-          y: { title: { display: true, text: 'Courant (A)' }, ticks: { maxTicksLimit: 8 } },
+          x: { title: { display: true, text: 'Distance (m)' },
+          ticks: { maxTicksLimit: 12 },
+                      grid: {                    
+                    color: '#b6b6b6ff',      // Couleur des lignes de grille
+                    lineWidth: 1,              // Épaisseur des lignes de grille
+            },
+          border: {
+            color: '#777777ff',             // Couleur de l'axe X
+            width: 2,                         // Epaisseur de l'axe X
+            dash: [4, 4],
+          },
+         },
+          y: { title: { display: true, text: 'Courant (A)' },
+          ticks: { maxTicksLimit: 8 },
+                      grid: {                    
+                    color: '#b6b6b6ff',      // Couleur des lignes de grille
+                    lineWidth: 1,              // Épaisseur des lignes de grille
+            },
+          border: {
+            color: '#777777ff',             // Couleur de l'axe X
+            width: 2,                         // Epaisseur de l'axe X
+            dash: [4, 4],
+          },
+         },
         },
       },
     };

@@ -22,7 +22,7 @@ export class CircuitCsvParserService {
         const cleanText = text.replace(/^\uFEFF/, '');
 
         return new Promise<CircuitProfile>((resolve, reject) => {
-            Papa.parse<ShellCircuitRow>(cleanText, {
+            Papa.parse<ShellCircuitRow>(cleanText,{
                 header: true,
                 dynamicTyping: true,
                 skipEmptyLines: true,
