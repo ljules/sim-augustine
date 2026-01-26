@@ -32,10 +32,23 @@
       *ngIf="start"
       [attr.cx]="start.x"
       [attr.cy]="start.y"
-      r="8"
-      fill="lime"
+      r="10"
+      fill="yellow"
       stroke="black"
       stroke-width="1"
       vector-effect="non-scaling-stroke"
     ></circle>
+
+    <!-- Flèche de sens du parcours : -->
+    <polygon
+    *ngIf="arrowPoints"
+    [attr.points]="arrowPoints"
+    fill="lime"
+    stroke="black"
+    stroke-width="0"
+    vector-effect="non-scaling-stroke"
+    ></polygon>
+
+
+
   </svg>

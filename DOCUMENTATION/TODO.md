@@ -1,3 +1,1 @@
-Ajouter le composant SpeedChartComponent
-Tester la simulation
-Ajouter l'export csv des résultats.
+Ajouter l'export csv des résultats et revalider les résultat avec la version Python.

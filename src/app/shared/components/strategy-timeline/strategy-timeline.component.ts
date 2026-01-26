@@ -80,8 +80,8 @@ export class StrategyTimelineComponent implements AfterViewInit {
   // ---------- Actions ----------
   addInterval(): void {
     // Interval par défaut au début, 50m ou minLen
-    const d = 0;
-    const f = Math.min(this.distanceMax, Math.max(this.minLenM, 50));
+    const d = 20;
+    const f = Math.min(this.distanceMax, Math.max(this.minLenM, d+50));
     const next = [...this.intervals, { d, f }];
     this.setIntervals(next);
   }

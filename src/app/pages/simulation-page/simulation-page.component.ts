@@ -14,24 +14,32 @@ import { Vehicle } from '../../domain/vehicle/vehicle';
 import { IntervalStrategy } from '../../domain/strategy/interval-strategy';
 import { simulateEulerIntervals, simulateRK4Intervals } from '../../domain/simulation/simulate-intervals';
 import { SimResult } from '../../domain/types';
+import { StrategyConfig } from '../../domain/types';
 
 import { SpeedChartComponent } from '../../shared/components/speed-chart/speed-chart.component';
 import { AltitudeChartComponent } from '../../shared/components/altitude-chart/altitude-chart.component';
 import { CurrentChartComponent } from '../../shared/components/current-chart/current-chart.component';
 import { EnergyChartComponent } from '../../shared/components/energy-chart/energy-chart.component';
+import { StrategyTimelineComponent, Interval } from "../../shared/components/strategy-timeline/strategy-timeline.component";
+import { DualSpeedAltitudeChartComponent } from '../../shared/components/dual-speed-altitude-chart/dual-speed-altitude-chart.component';
+
+type SolverMethod = 'Euler' | 'RK4';
+type ComputeMode = 'live'  | 'deferred';
 
 
 @Component({
     selector: 'app-simulation-page',
     standalone: true,
     imports: [
-        CommonModule,
-        FormsModule,
-        SpeedChartComponent,
-        AltitudeChartComponent,
-        CurrentChartComponent,
-        EnergyChartComponent
-    ],
+    CommonModule,
+    FormsModule,
+    SpeedChartComponent,
+    AltitudeChartComponent,
+    CurrentChartComponent,
+    EnergyChartComponent,
+    StrategyTimelineComponent,
+    DualSpeedAltitudeChartComponent,
+],
     templateUrl: './simulation-page.component.html',
     styleUrl: './simulation-page.component.css'
 })
@@ -51,13 +59,53 @@ export class SimulationPageComponent {
 
     circuitProfile = this.circuitStore.getCircuit();
 
+    distanceMax = 1000;
+    cfg: StrategyConfig;
+
+    solver: SolverMethod = "RK4"        // Valeur par défaut pour le calcul de la simulation.
+    computeMode: ComputeMode = 'live'   // Mode dynamique par défaut
+
+    private liveSimDebounce?: ReturnType<typeof setTimeout>;
+    private readonly LIVE_DEBOUNCE_MS = 120; // Evite le recalcul à chauqe pixel glissé
+
 
 
     constructor(
         private circuitStore: CircuitStoreService,
         private vehicleStore: VehicleStoreService,
         private strategyStore: StrategyStoreService
-    ) { }
+    ) {
+        this.cfg = this.strategyStore.get();
+     }
+
+    ngOnInit(): void {
+        // ... ton init existant (lecture du store, etc.)
+
+        // Premier rendu / premier calcul
+        queueMicrotask(() => this.simulate(this.solver));
+        // ou: setTimeout(() => this.runSimulation(this.solver), 0);
+    }
+
+
+
+    onIntervalsChange(intervals: Interval[]): void {
+        this.strategyIntervals = intervals.map(i => ({ d: i.d, f: i.f }));
+        this.cfg = { ...this.cfg, intervals: this.strategyIntervals };
+        this.strategyStore.set(this.cfg);
+
+        this.scheduleSimulationIfLive();
+    }
+
+    scheduleSimulationIfLive(): void {
+        if (this.computeMode !== 'live') return;
+
+        if (this.liveSimDebounce) clearTimeout(this.liveSimDebounce);
+        this.liveSimDebounce = setTimeout(() => {
+            this.simulate(this.solver);
+        }, this.LIVE_DEBOUNCE_MS);
+    }
+
+
 
     simulate(method: 'Euler' | 'RK4'): void {
         this.error = null;
@@ -75,6 +123,9 @@ export class SimulationPageComponent {
         const vehicleCfg = this.vehicleStore.get(); // à adapter à ton store existant
         const strategyCfg = this.strategyStore.get();
 
+
+        const circuit = this.circuitStore.getCircuit();
+        if (circuit) this.distanceMax = circuit.s[circuit.s.length - 1];
         this.strategyIntervals = strategyCfg.intervals ?? [];
 
 

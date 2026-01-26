@@ -1,149 +1,137 @@
 <div class="container py-3">
 
-  <!-- Titre -->
-  <h2 class="mb-3">
-    <i class="bi bi-map me-2"></i>
-    Circuit
-  </h2>
+    <!-- Titre -->
+    <h2 class="mb-3">
+        <i class="bi bi-map me-2"></i>
+        Circuit
+    </h2>
 
-  <!-- Import CSV -->
-  <div class="card mb-3">
-    <div class="card-body">
-      <label class="form-label fw-semibold">
-        Importer le CSV officiel Shell Eco-marathon
-      </label>
+    <!-- Import CSV -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <label class="form-label fw-semibold">
+                Importer le CSV officiel Shell Eco-marathon
+            </label>
 
-      <input
-        class="form-control"
-        type="file"
-        accept=".csv"
-        (change)="onFileSelected($event)">
+            <input class="form-control" type="file" accept=".csv" (change)="onFileSelected($event)">
 
-      <div class="form-text">
-        Fichier attendu : Distance (m), Altitude (m), UTM, GPS
-      </div>
+            <div class="form-text">
+                Fichier attendu : Distance (m), Altitude (m), UTM, GPS
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Erreur -->
-  <div *ngIf="error" class="alert alert-danger">
-    <i class="bi bi-exclamation-triangle me-2"></i>
-    {{ error }}
-  </div>
-
-  <!-- Résumé circuit + KPI -->
-  <div *ngIf="circuit as c" class="card">
-    <div class="card-body">
-
-      <h5 class="card-title mb-3">
-        <i class="bi bi-geo-alt-fill me-2"></i>
-        Nom du fichier : {{ c.name }}
-      </h5>
-
-      <div class="row g-3">
-        <!-- Circuit -->
-        <div class="col-md-3 col-6">
-          <div class="fw-semibold">Points</div>
-          <div>{{ nbPoints }}</div>
-        </div>
-
-        <div class="col-md-3 col-6">
-          <div class="fw-semibold">Distance max</div>
-          <div>{{ distanceMax | number:'1.0-0' }} m</div>
-        </div>
-
-        <div class="col-md-3 col-6">
-          <div class="fw-semibold">Altitude min</div>
-          <div>{{ zMin | number:'1.0-2' }} m</div>
-        </div>
-
-        <div class="col-md-3 col-6">
-          <div class="fw-semibold">Altitude max</div>
-          <div>{{ zMax | number:'1.0-2' }} m</div>
-        </div>
-
-        <!-- KPI pente -->
-        <div class="col-md-3 col-6">
-          <div class="fw-semibold">Pente min</div>
-          <div>{{ gradeMinPct | number:'1.2-2' }} %</div>
-        </div>
-
-        <div class="col-md-3 col-6">
-          <div class="fw-semibold">Pente max</div>
-          <div>{{ gradeMaxPct | number:'1.2-2' }} %</div>
-        </div>
-
-        <div class="col-md-3 col-6">
-          <div class="fw-semibold">|Pente| moyenne</div>
-          <div>{{ gradeAbsMeanPct | number:'1.2-2' }} %</div>
-        </div>
-      </div>
-
-      <div class="mt-4 d-flex gap-2">
-        <button
-          type="button"
-          class="btn btn-outline-danger"
-          (click)="clear()">
-          <i class="bi bi-trash me-1"></i>
-          Supprimer le circuit
-        </button>
-      </div>
-
+    <!-- Erreur -->
+    <div *ngIf="error" class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        {{ error }}
     </div>
-  </div>
 
+    <!-- Résumé circuit + KPI -->
+    <div *ngIf="circuit as c" class="card mb-3">
+        <div class="card-body">
 
-  <!-- Tracé du circuit -->
-<div *ngIf="circuit as c" class="card">
-  <div class="card-header">Vue 2D du circuit</div>
-  <div class="card-body" style="height: 420px">
-    <app-circuit-map-component
-      [s]="c.s"
-      [utmX]="c.utmX"
-      [utmY]="c.utmY"
-      [intervals]="strategyConfig.intervals"
-      [keepEveryMeters]="1"
-    />
-  </div>
-</div>
+            <h5 class="card-title mb-3">
+                <i class="bi bi-geo-alt-fill me-2"></i>
+                Nom du fichier : {{ c.name }}
+            </h5>
 
+            <div class="row g-3">
+                <!-- Circuit -->
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Points</div>
+                    <div>{{ nbPoints }}</div>
+                </div>
 
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Distance max</div>
+                    <div>{{ distanceMax | number:'1.0-0' }} m</div>
+                </div>
 
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Altitude min</div>
+                    <div>{{ zMin | number:'1.0-2' }} m</div>
+                </div>
 
-  <!-- Graphes -->
-  <div *ngIf="circuit as c" class="card mt-3">
-    <div class="card-body">
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Altitude max</div>
+                    <div>{{ zMax | number:'1.0-2' }} m</div>
+                </div>
 
-      <h5 class="card-title mb-3">
-        <i class="bi bi-graph-up me-2"></i>
-        Profil du circuit
-      </h5>
+                <!-- KPI pente -->
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Pente min</div>
+                    <div>{{ gradeMinPct | number:'1.2-2' }} %</div>
+                </div>
 
-      <app-altitude-chart
-        [s]="c.s"
-        [z]="c.z"
-        [title]="'Altitude vs Distance — ' + c.name">
-      </app-altitude-chart>
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Pente max</div>
+                    <div>{{ gradeMaxPct | number:'1.2-2' }} %</div>
+                </div>
 
-      <hr class="my-4">
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">|Pente| moyenne</div>
+                    <div>{{ gradeAbsMeanPct | number:'1.2-2' }} %</div>
+                </div>
+            </div>
 
-      <h6 class="mb-3">
-        <i class="bi bi-activity me-2"></i>
-        Pente
-      </h6>
+            <div class="mt-4 d-flex gap-2">
+                <button type="button" class="btn btn-outline-danger" (click)="clear()">
+                    <i class="bi bi-trash me-1"></i>
+                    Supprimer le circuit
+                </button>
+            </div>
 
-      <app-grade-chart
-        [s]="c.s"
-        [z]="c.z"
-        [smoothWindow]="9"
-        [title]="'Pente (%) vs Distance — ' + c.name">
-      </app-grade-chart>
-
-      <div class="text-muted small mt-2">
-        Pente calculée par dérivée centrée puis lissée (fenêtre = 9 points).
-      </div>
-
+        </div>
     </div>
-  </div>
+
+
+    <!-- Tracé du circuit -->
+    <div *ngIf="circuit as c" class="card">
+        <div class="card-header">Vue 2D du circuit</div>
+        <div class="card-body" style="height: 420px">
+            <app-circuit-map-component
+            [s]="c.s"
+            [utmX]="c.utmX"
+            [utmY]="c.utmY"
+            [intervals]="strategyConfig.intervals"
+            [keepEveryMeters]="1"
+            [arrowAtDistance]="35"
+            [arrowSize]="15">
+        </app-circuit-map-component>
+
+        </div>
+    </div>
+
+
+
+    <!-- Graphes -->
+    <div *ngIf="circuit as c" class="card mt-3">
+        <div class="card-body">
+
+            <h5 class="card-title mb-3">
+                <i class="bi bi-graph-up me-2"></i>
+                Profil du circuit
+            </h5>
+
+            <app-altitude-chart [s]="c.s" [z]="c.z" [title]="'Altitude vs Distance — ' + c.name">
+            </app-altitude-chart>
+
+            <hr class="my-4">
+
+            <h6 class="mb-3">
+                <i class="bi bi-activity me-2"></i>
+                Pente
+            </h6>
+
+            <app-grade-chart [s]="c.s" [z]="c.z" [smoothWindow]="9" [title]="'Pente (%) vs Distance — ' + c.name">
+            </app-grade-chart>
+
+            <div class="text-muted small mt-2">
+                Pente calculée par dérivée centrée puis lissée (fenêtre = 9 points).
+            </div>
+
+        </div>
+    </div>
 
 </div>

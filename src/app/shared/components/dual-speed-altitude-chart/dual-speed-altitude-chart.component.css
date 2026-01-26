@@ -1,0 +1,33 @@
+.chart-wrapper {
+  position: relative;
+  height: 320px; /* adapte à ton layout */
+  width: 100%;
+}
+
+.chart-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+
+.legend-swatch {
+  width: 18px;
+  height: 10px;
+  border-radius: 2px;
+  background: rgba(220, 53, 69, 0.15);
+  border: 1px solid rgba(220, 53, 69, 0.25);
+}
+
+.legend-line-speed {
+  width: 18px;
+  height: 0;
+  border-top: 3px solid #198754; /* vert */
+  border-radius: 2px;
+}
+
+.legend-line-altitude {
+  width: 18px;
+  height: 0;
+  border-top: 3px solid #0249a5ff; /* vert */
+  border-radius: 2px;
+}

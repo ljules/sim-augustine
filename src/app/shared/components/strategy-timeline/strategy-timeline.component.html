@@ -1,4 +1,4 @@
-<div class="timeline card">
+<div class="timeline">
   <div class="card-body">
 
     <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
@@ -7,19 +7,20 @@
           <i class="bi bi-sliders me-2"></i>
           Intervalles ON moteur (D → F)
         </div>
-        <div class="text-muted small">
-          Glisser D / F ou le segment rouge. Unités : mètres.
-        </div>
+
       </div>
 
+      <!-- Bouton ajout run motor : -->
       <div class="d-flex gap-2">
-        <button type="button" class="btn btn-sm btn-outline-primary" (click)="addInterval()">
-          <i class="bi bi-plus-lg me-1"></i> Ajouter
+        <button type="button" class="btn btn-warning btn-sm" (click)="addInterval()">
+          <i class="bi bi-plus-circle me-1"></i> Motor On
         </button>
       </div>
     </div>
 
-    <div class="mt-3 track-wrap">
+
+
+    <div class="mt-2 track-wrap ms-3 me-3">
       <div
         #track
         class="track"
@@ -27,6 +28,7 @@
         (pointerup)="onPointerUp($event)"
         (pointercancel)="onPointerUp($event)"
       >
+      <div class="track-inner">
         <!-- Ligne de base -->
         <div class="baseline"></div>
 
@@ -74,12 +76,10 @@
             <i class="bi bi-trash"></i>
           </button>
         </ng-container>
+        </div>
       </div>
 
-      <div class="d-flex justify-content-between text-muted small mt-1">
-        <div>0 m</div>
-        <div>{{ distanceMax | number:'1.0-0' }} m</div>
-      </div>
+
     </div>
 
   </div>

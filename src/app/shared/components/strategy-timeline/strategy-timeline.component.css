@@ -4,7 +4,9 @@
 
 .track {
   position: relative;
+  padding: 0 24px;
   height: 90px;
+  left: 0px;
   border: 1px solid #ddd;
   border-radius: 10px;
   background: #fff;
@@ -12,26 +14,32 @@
   touch-action: none; /* important pour drag tactile */
 }
 
+.track-inner {
+  position: relative;
+  height: 100%;
+  margin: 0 24px; /* marge début/fin */
+}
+
 .baseline {
   position: absolute;
-  left: 14px;
-  right: 14px;
-  top: 40px;
-  height: 4px;
-  background: #0d6efd; /* bleu bootstrap */
+  left: 0px;
+  right: 0px;
+  top: 38px;
+  height: 3px;
+  background: #696969;
   border-radius: 10px;
-  opacity: 0.9;
+  opacity: 1.0;
 }
 
 /* segment ON */
 .segment {
   position: absolute;
-  top: 34px;
-  height: 16px;
-  background: #dc3545; /* rouge bootstrap */
-  border-radius: 10px;
+  top: 35px;
+  height: 9px;
+  background: #ff6e0d; /* rouge bootstrap */
+  border-radius: 1px;
   cursor: grab;
-  opacity: 0.95;
+  opacity: 0.70;
 }
 .segment:active {
   cursor: grabbing;
@@ -40,33 +48,33 @@
 /* handles */
 .handle {
   position: absolute;
-  top: 16px;
+  top: 29px;
   transform: translateX(-50%);
-  width: 34px;
-  height: 34px;
+  width: 20px;
+  height: 20px;
   border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 3px solid #111;
+  border: 0px solid #111;
   cursor: ew-resize;
   background: #fff;
 }
 
 .handle-d {
   border-color: #111;
-  background: #dc3545;
+  background: #c164e6;
 }
 
 .handle-f {
   border-color: #111;
-  background: #198754;
+  background: #7dfd83;
 }
 
 .badge {
   font-weight: 700;
   color: #fff;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
 }
 
 .badge-d { }
@@ -74,7 +82,8 @@
 
 .handle-value {
   position: absolute;
-  top: 40px;
+  top: 
+  30px;
   font-size: 0.75rem;
   color: #333;
   background: rgba(255,255,255,0.9);
@@ -87,7 +96,7 @@
 /* bouton suppression */
 .btn-remove {
   position: absolute;
-  top: 60px;
+  top: 5px;
   transform: translateX(-50%);
   padding: 0.05rem 0.35rem;
 }
