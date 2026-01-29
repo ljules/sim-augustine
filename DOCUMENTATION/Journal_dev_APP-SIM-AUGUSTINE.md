@@ -71,6 +71,7 @@ ng g component shared/components/current-chart --standalone
 ng g component shared/components/energy-chart --standalone
 ng g component shared/components/CircuitMapComponent --standalone
 ng g component shared/components/dual-speed-altitude-chart --standalone
+ng g component shared/components/pwm-chart --standalone
 ```
 
 #### Génération des services (état + persistance avec *local storage*) :

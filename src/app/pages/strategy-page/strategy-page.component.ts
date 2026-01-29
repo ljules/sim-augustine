@@ -2,11 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { StrategyTimelineComponent, Interval } from '../../shared/components/strategy-timeline/strategy-timeline.component';
+import { StrategyTimelineComponent } from '../../shared/components/strategy-timeline/strategy-timeline.component';
 import { StrategyStoreService } from '../../core/services/strategy-store.service';
 import { CircuitStoreService } from '../../core/services/circuit-store.service';
 import { StrategyConfig } from '../../domain/types';
 
+import type { Interval } from '../../domain/types';
 
 @Component({
   selector: 'app-strategy-page',

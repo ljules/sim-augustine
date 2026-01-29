@@ -16,7 +16,7 @@ export type SyStateVar = {
 
 
 // Définition de la fonction d'état du système qui retourne les variables d'état du système :
-export type SyStateFn = (s: number, v: number) => SyStateVar;
+export type SyStateFn = (t: number, s: number, v: number) => SyStateVar;
 
 
 // Définition du type de retour pour les fonctions du calcul par pas (eulerStep() ou rk4Step) :
@@ -25,4 +25,5 @@ export type StepResult = {
     vNext: number;              // Vitesse pour le calcul de l'étape suivante
     iStep: number;              // Courant calculé en début d'étape, i n'est pas connu au lancement de la simulation
     context: SyStateVar;        // Valeurs du contexte de calcul
+    pElecAvg: number;           // Puissance moyenne sur le pas de calcul (W)
 };

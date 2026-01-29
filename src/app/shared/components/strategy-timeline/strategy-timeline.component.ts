@@ -1,20 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { Component, AfterViewInit, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
-export type Interval = { d: number; f: number };
+import { Interval } from '../../../domain/types';
 
 type DragMode = 'none' | 'handle-d' | 'handle-f' | 'segment';
-
 
 @Component({
   selector: 'app-strategy-timeline',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './strategy-timeline.component.html',
   styleUrl: './strategy-timeline.component.css'
 })
-
-
 export class StrategyTimelineComponent implements AfterViewInit {
   @ViewChild('track', { static: true }) trackRef!: ElementRef<HTMLDivElement>;
 
@@ -32,6 +30,12 @@ export class StrategyTimelineComponent implements AfterViewInit {
 
   /** Émet la liste mise à jour */
   @Output() intervalsChange = new EventEmitter<Interval[]>();
+
+  /** Rampe PWM par défaut (s) pour les nouveaux intervalles */
+  @Input() defaultDtSlope = 0;
+
+  /** Émet defaultDtSlope mis à jour */
+  @Output() defaultDtSlopeChange = new EventEmitter<number>();
 
   /** Option MVP: autoriser chevauchements */
   @Input() allowOverlap = true;
@@ -66,6 +70,25 @@ export class StrategyTimelineComponent implements AfterViewInit {
     this.trackWidthPx = Math.max(1, rect.width);
   }
 
+  setDefaultDtSlope(raw: any): void {
+    const n = Number(raw);
+    const v = Number.isFinite(n) ? Math.max(0, n) : 0;
+    if (v === this.defaultDtSlope) return;
+    this.defaultDtSlope = v;
+    this.defaultDtSlopeChange.emit(this.defaultDtSlope);
+  }
+
+  setIntervalDtSlope(index: number, raw: any): void {
+    const n = Number(raw);
+    const v = Number.isFinite(n) ? Math.max(0, n) : 0;
+
+    const next = this.intervals.map((iv, i) =>
+      i === index ? { ...iv, dtSlope: v } : iv
+    );
+
+    this.setIntervals(next);
+  }
+
   // ---------- UI helpers ----------
   pxFromM(m: number): number {
     const clamped = this.clamp(m, 0, this.distanceMax);
@@ -81,8 +104,11 @@ export class StrategyTimelineComponent implements AfterViewInit {
   addInterval(): void {
     // Interval par défaut au début, 50m ou minLen
     const d = 20;
-    const f = Math.min(this.distanceMax, Math.max(this.minLenM, d+50));
-    const next = [...this.intervals, { d, f }];
+    const f = Math.min(this.distanceMax, Math.max(this.minLenM, d + 50));
+
+    const newIv: Interval = { d, f, dtSlope: this.defaultDtSlope };
+    const next = [...this.intervals, newIv];
+
     this.setIntervals(next);
   }
 
@@ -152,6 +178,9 @@ export class StrategyTimelineComponent implements AfterViewInit {
     // (Optionnel) gestion chevauchement : pour MVP on laisse allowOverlap=true
     if (!this.allowOverlap) {
       this.resolveOverlaps(current, this.dragIndex);
+      // resolveOverlaps met déjà this.intervals
+      this.intervalsChange.emit(this.intervals);
+      return;
     }
 
     this.setIntervals(current, false); // pas besoin de re-snap global, déjà fait
@@ -188,7 +217,11 @@ export class StrategyTimelineComponent implements AfterViewInit {
         let f = this.snap(this.clamp(it.f, 0, this.distanceMax));
         if (f < d) [d, f] = [f, d];
         if (f - d < this.minLenM) f = this.clamp(d + this.minLenM, 0, this.distanceMax);
-        return { d, f };
+
+        // dtSlope doit rester associé à l'intervalle
+        const dtSlope = it.dtSlope ?? this.defaultDtSlope;
+
+        return { d, f, dtSlope };
       })
       .sort((a, b) => a.d - b.d);
 
@@ -199,23 +232,29 @@ export class StrategyTimelineComponent implements AfterViewInit {
   private resolveOverlaps(list: Interval[], movedIndex: number): void {
     // Simple: après tri, on “repousse” pour éviter overlap (MVP : minimal)
     const sorted = this.cleanIntervals(list);
+
     for (let i = 1; i < sorted.length; i++) {
       const prev = sorted[i - 1];
       const cur = sorted[i];
+
       if (cur.d < prev.f) {
         const len = cur.f - cur.d;
         cur.d = prev.f;
         cur.f = this.clamp(cur.d + len, 0, this.distanceMax);
+
         // si trop court, clamp encore
-        if (cur.f - cur.d < this.minLenM) cur.f = this.clamp(cur.d + this.minLenM, 0, this.distanceMax);
+        if (cur.f - cur.d < this.minLenM) {
+          cur.f = this.clamp(cur.d + this.minLenM, 0, this.distanceMax);
+        }
       }
     }
+
     // remet (pas parfait index moved, mais suffisant MVP)
     this.intervals = sorted;
   }
 
   private cloneIntervals(list: Interval[]): Interval[] {
-    return list.map(it => ({ d: it.d, f: it.f }));
+    return list.map(it => ({ d: it.d, f: it.f, dtSlope: it.dtSlope ?? this.defaultDtSlope }));
   }
 
   private clamp(v: number, a: number, b: number): number {

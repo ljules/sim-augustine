@@ -1,24 +1,34 @@
 <div class="timeline">
   <div class="card-body">
-
     <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
       <div>
         <div class="fw-semibold">
           <i class="bi bi-sliders me-2"></i>
           Intervalles ON moteur (D → F)
         </div>
-
       </div>
 
-      <!-- Bouton ajout run motor : -->
+      <!-- Bouton & valeur dtSlope pour ajout run motor : -->
       <div class="d-flex gap-2">
+        <!-- defaultDtSlope input -->
+        <div class="d-flex align-items-center gap-2">
+          <label class="small text-muted m-0">dtSlope (s)</label>
+          <input
+            type="number"
+            class="form-control form-control-sm dt-slope-input"
+            [ngModel]="defaultDtSlope"
+            (ngModelChange)="setDefaultDtSlope($event)"
+            min="0"
+            step="0.1"
+          />
+        </div>
+
+        <!-- Bouton d'ajout -->
         <button type="button" class="btn btn-warning btn-sm" (click)="addInterval()">
           <i class="bi bi-plus-circle me-1"></i> Motor On
         </button>
       </div>
     </div>
-
-
 
     <div class="mt-2 track-wrap ms-3 me-3">
       <div
@@ -28,60 +38,67 @@
         (pointerup)="onPointerUp($event)"
         (pointercancel)="onPointerUp($event)"
       >
-      <div class="track-inner">
-        <!-- Ligne de base -->
-        <div class="baseline"></div>
+        <div class="track-inner">
+          <!-- Ligne de base -->
+          <div class="baseline"></div>
 
-        <!-- Intervalles -->
-        <ng-container *ngFor="let it of intervals; let i = index">
-          <!-- Segment rouge -->
-          <div
-            class="segment"
-            [style.left.%]="percentFromM(it.d)"
-            [style.width.%]="percentFromM(it.f) - percentFromM(it.d)"
-            (pointerdown)="onPointerDownSegment($event, i)"
-            title="Glisser le segment"
-          ></div>
+          <!-- Intervalles -->
+          <ng-container *ngFor="let it of intervals; let i = index">
+            <!-- Segment rouge -->
+            <div
+              class="segment"
+              [style.left.%]="percentFromM(it.d)"
+              [style.width.%]="percentFromM(it.f) - percentFromM(it.d)"
+              (pointerdown)="onPointerDownSegment($event, i)"
+              title="Glisser le segment"
+            ></div>
 
-          <!-- Handle D -->
-          <div
-            class="handle handle-d"
-            [style.left.%]="percentFromM(it.d)"
-            (pointerdown)="onPointerDownHandle($event, i, 'd')"
-            title="Départ ON"
-          >
-            <span class="badge badge-d">D</span>
-            <div class="handle-value">{{ it.d | number:'1.0-0' }}</div>
-          </div>
+            <!-- Handle D -->
+            <div
+              class="handle handle-d"
+              [style.left.%]="percentFromM(it.d)"
+              (pointerdown)="onPointerDownHandle($event, i, 'd')"
+              title="Départ ON"
+            >
+              <span class="badge badge-d">D</span>
+              <div class="handle-value">{{ it.d | number:'1.0-0' }}</div>
+            </div>
 
-          <!-- Handle F -->
-          <div
-            class="handle handle-f"
-            [style.left.%]="percentFromM(it.f)"
-            (pointerdown)="onPointerDownHandle($event, i, 'f')"
-            title="Fin ON"
-          >
-            <span class="badge badge-f">F</span>
-            <div class="handle-value">{{ it.f | number:'1.0-0' }}</div>
-          </div>
+            <!-- Handle F -->
+            <div
+              class="handle handle-f"
+              [style.left.%]="percentFromM(it.f)"
+              (pointerdown)="onPointerDownHandle($event, i, 'f')"
+              title="Fin ON"
+            >
+              <span class="badge badge-f">F</span>
+              <div class="handle-value">{{ it.f | number:'1.0-0' }}</div>
+            </div>
 
-          <!-- Bouton supprimer -->
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-danger btn-remove"
-            [style.left.%]="percentFromM((it.d + it.f) / 2)"
-            (click)="removeInterval(i)"
-            title="Supprimer l'intervalle"
-          >
-            <i class="bi bi-trash"></i>
-          </button>
-        </ng-container>
+            <!-- dtSlope + suppression -->
+            <div class="interval-tools" [style.left.%]="percentFromM((it.d + it.f) / 2)">
+              <input
+                type="number"
+                class="form-control form-control-sm dt-slope-mini"
+                [ngModel]="it.dtSlope"
+                (ngModelChange)="setIntervalDtSlope(i, $event)"
+                min="0"
+                step="0.1"
+                title="dtSlope (s)"
+              />
+
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-danger btn-remove"
+                (click)="removeInterval(i)"
+                title="Supprimer l'intervalle"
+              >
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </ng-container>
         </div>
       </div>
-
-
     </div>
-
   </div>
 </div>
-

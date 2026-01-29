@@ -51,14 +51,15 @@ export type VehicleFullConfig = {
 
 
 // Type objet de modélisation un intervalle de consigne PWM du moteur :
-export type Interval = { d: number; f: number };
+export type Interval = { d: number; f: number; dtSlope: number };
 
 
 // Type objet de modélisation de l'ensemble des intervalles de consigne
 // PWM du moteur pour une simulation complète :
 export type StrategyConfig = {
-  pwmOn: number;          // 0..1 pwmTime0to1
-  intervals: Interval[];  // distances en m
+  pwmOn?: number;             // 0..1 pwmTime0to1
+  defaultDtSlope?: number;    // Durée (s) pour passer PWM de 0 à 1
+  intervals: Interval[];      // distances en m
 };
 
 

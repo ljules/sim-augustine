@@ -18,7 +18,7 @@
                 <!-- Champ de saisie du pas de calcul  -->
                 <div class="col-6 col-md-3">
                     <label class="form-label fw-bold">dt (s):</label><br>
-                    <input class="form-control-sm" type="number" [(ngModel)]="dt" name="dt" disabled style="max-width: 100px;">
+                    <input class="form-control-sm" type="number" [(ngModel)]="dt" name="dt" style="max-width: 100px;">
                 </div>
 
                 <!-- Champ de saisie de la durée limite de calcul de la simulation -->
@@ -156,14 +156,19 @@
                         </app-dual-speed-altitude-chart>
                     </div>
                 </div>
-
-                 
+               
 
                 <!-- Barre de stratégie -->
                 <div class="card mt-3">
-                    <app-strategy-timeline [distanceMax]="distanceMax" [snapM]="1" [minLenM]="5"
-                        [intervals]="strategyIntervals" (intervalsChange)="onIntervalsChange($event)">
-                    </app-strategy-timeline>
+                <app-strategy-timeline
+                    [distanceMax]="distanceMax"
+                    [snapM]="1"
+                    [minLenM]="5"
+                    [intervals]="strategyIntervals"
+                    (intervalsChange)="onIntervalsChange($event)"
+                    [defaultDtSlope]="defaultDtSlope"
+                    (defaultDtSlopeChange)="onDefaultDtSlopeChange($event)">
+                </app-strategy-timeline>
                 </div>
 
 
