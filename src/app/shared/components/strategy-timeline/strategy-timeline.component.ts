@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { Interval } from '../../../domain/types';
+import { Interval, IntervalColor } from '../../../domain/types';
 
 type DragMode = 'none' | 'handle-d' | 'handle-f' | 'segment';
 
@@ -36,6 +36,12 @@ export class StrategyTimelineComponent implements AfterViewInit {
 
   /** Émet defaultDtSlope mis à jour */
   @Output() defaultDtSlopeChange = new EventEmitter<number>();
+
+  /** Couleur par défaut pour les intervalles */
+  @Input() defaultColor: IntervalColor = 'yellow';
+
+  /** Émet defaultColorChange mis à jour */
+  @Output() defaultColorChange = new EventEmitter<IntervalColor>();
 
   /** Option MVP: autoriser chevauchements */
   @Input() allowOverlap = true;
@@ -89,6 +95,20 @@ export class StrategyTimelineComponent implements AfterViewInit {
     this.setIntervals(next);
   }
 
+  setDefaultColor(color: IntervalColor): void {
+    if (color === this.defaultColor) return;
+    this.defaultColor = color;
+    this.defaultColorChange.emit(this.defaultColor);
+  }
+
+  setIntervalColor(index: number, color: IntervalColor): void {
+    const next = this.intervals.map((iv, i) =>
+      i === index ? { ...iv, color } : iv
+    );
+
+    this.setIntervals(next);
+  }
+
   // ---------- UI helpers ----------
   pxFromM(m: number): number {
     const clamped = this.clamp(m, 0, this.distanceMax);
@@ -106,7 +126,7 @@ export class StrategyTimelineComponent implements AfterViewInit {
     const d = 20;
     const f = Math.min(this.distanceMax, Math.max(this.minLenM, d + 50));
 
-    const newIv: Interval = { d, f, dtSlope: this.defaultDtSlope };
+    const newIv: Interval = { d, f, dtSlope: this.defaultDtSlope, color: this.defaultColor };
     const next = [...this.intervals, newIv];
 
     this.setIntervals(next);
@@ -193,7 +213,7 @@ export class StrategyTimelineComponent implements AfterViewInit {
     // libère
     try {
       this.trackRef.nativeElement.releasePointerCapture(ev.pointerId);
-    } catch {}
+    } catch { }
 
     this.dragMode = 'none';
     this.dragIndex = -1;
@@ -218,10 +238,11 @@ export class StrategyTimelineComponent implements AfterViewInit {
         if (f < d) [d, f] = [f, d];
         if (f - d < this.minLenM) f = this.clamp(d + this.minLenM, 0, this.distanceMax);
 
-        // dtSlope doit rester associé à l'intervalle
+        // dtSlope & color doivent rester associés à l'intervalle
         const dtSlope = it.dtSlope ?? this.defaultDtSlope;
+        const color = it.color ?? this.defaultColor;
 
-        return { d, f, dtSlope };
+        return { d, f, dtSlope, color };
       })
       .sort((a, b) => a.d - b.d);
 
@@ -254,7 +275,12 @@ export class StrategyTimelineComponent implements AfterViewInit {
   }
 
   private cloneIntervals(list: Interval[]): Interval[] {
-    return list.map(it => ({ d: it.d, f: it.f, dtSlope: it.dtSlope ?? this.defaultDtSlope }));
+    return list.map(it => ({
+      d: it.d,
+      f: it.f,
+      dtSlope: it.dtSlope ?? this.defaultDtSlope,
+      color: it.color ?? this.defaultColor,
+    }));
   }
 
   private clamp(v: number, a: number, b: number): number {

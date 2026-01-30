@@ -14,17 +14,17 @@
       vector-effect="non-scaling-stroke"
     ></path>
 
-    <!-- Segments en rouge -->
-    <ng-container *ngFor="let d of highlightPaths">
-      <path
-        [attr.d]="d"
+    <!-- Segments colorés pour afficher la stratégie -->
+    <ng-container *ngFor="let hp of highlightPaths">
+    <path
+        [attr.d]="hp.d"
         fill="none"
-        stroke="red"
+        [attr.stroke]="hp.color"
         stroke-width="8"
         stroke-linecap="round"
         stroke-linejoin="round"
         vector-effect="non-scaling-stroke"
-      ></path>
+    ></path>
     </ng-container>
 
     <!-- Start/Finish (premier point) -->
@@ -38,6 +38,19 @@
       stroke-width="1"
       vector-effect="non-scaling-stroke"
     ></circle>
+
+    <!-- Point mobile (curseur / animation) -->
+    <circle
+        *ngIf="cursor"
+        [attr.cx]="cursor.x"
+        [attr.cy]="cursor.y"
+        r="9"
+        fill="white"
+        stroke="black"
+        stroke-width="2"
+        vector-effect="non-scaling-stroke"
+    ></circle>
+
 
     <!-- Flèche de sens du parcours : -->
     <polygon

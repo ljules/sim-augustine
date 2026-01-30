@@ -6,12 +6,12 @@
 // Type objet pour la modélisation du circuit à partir de données du CSV :
 export type CircuitProfile = {
   name: string;
-  s: number[];          // distance (m)
-  z: number[];          // elevation (m)
-  utmX: number[];       // 
-  utmY: number[];       // 
-  lon: number[];        // Longitude
-  lat: number[];        // Latitude
+  s: number[];          // Distances/positions sur le circuit (m)
+  z: number[];          // Elevations/altitudes sur chaque point du circuit (m)
+  utmX: number[];       // Coordonnées X (m) du point dans le système UTM
+  utmY: number[];       // Coordonnées Y (m) du point dans le système UTM
+  lon: number[];        // Longitude (non exploité dans l'application)
+  lat: number[];        // Latitude (non exploité dans l'application)
 };
 
 
@@ -31,15 +31,15 @@ export type MotorConfig = {
 
 // Type objet pour la modélisation du véhicule :
 export type VehicleConfig = {
-  m: number;        // kg
-  g: number;        // m/s²
-  fs: number;       // coeff frottements secs (roulement)
-  rho: number;      // kg/m³
-  s: number;        // surface frontale m²
-  cx: number;       // coeff traînée
-  r_red: number;    // rapport réducteur
-  r_roue: number;   // m
-  fv: number;       // N.s/m
+  m: number;           // kg
+  g: number;           // m/s²
+  fs: number;          // coeff frottements secs (roulement)
+  rho: number;         // kg/m³
+  s: number;           // surface frontale m²
+  cx: number;          // coeff traînée
+  r_red: number;       // rapport réducteur
+  r_roue: number;      // m
+  fv: number;          // N.s/m
 };
 
 
@@ -50,16 +50,26 @@ export type VehicleFullConfig = {
 };
 
 
+// Couleurs pour les stratégies d'accélération :
+export type IntervalColor = 'yellow' | 'red' | 'blue'
+
+
 // Type objet de modélisation un intervalle de consigne PWM du moteur :
-export type Interval = { d: number; f: number; dtSlope: number };
+export type Interval = { 
+    d: number;
+    f: number;
+    dtSlope: number;
+    color: IntervalColor;
+};
 
 
 // Type objet de modélisation de l'ensemble des intervalles de consigne
 // PWM du moteur pour une simulation complète :
 export type StrategyConfig = {
-  pwmOn?: number;             // 0..1 pwmTime0to1
-  defaultDtSlope?: number;    // Durée (s) pour passer PWM de 0 à 1
-  intervals: Interval[];      // distances en m
+  pwmOn?: number;                   // 0..1 pwmTime0to1
+  defaultDtSlope?: number;          // Durée (s) pour passer PWM de 0 à 1
+  defaultColor?: IntervalColor;     // Couleur par défaut pour l'intervalle
+  intervals: Interval[];            // distances en m
 };
 
 

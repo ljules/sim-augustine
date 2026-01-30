@@ -1,6 +1,6 @@
 <div class="container py-3">
     <h2 class="mb-3">
-        <i class="bi bi-play-fill me-2"></i>
+        <i class="bi bi-calculator-fill me-2"></i>
         <span class="fw-bold">Simulation</span> (Construire & valider la stratégie)
     </h2>
 
@@ -157,18 +157,27 @@
                     </div>
                 </div>
                
+                <!-- Graph PWM -->
+                <div class="card mt-3 ms-2 ">
+                <app-pwm-chart
+                    [points]="result ? result.points : []"
+                    [distanceMax]="distanceMax">
+                </app-pwm-chart>
+                </div>
 
                 <!-- Barre de stratégie -->
-                <div class="card mt-3">
                 <app-strategy-timeline
-                    [distanceMax]="distanceMax"
-                    [snapM]="1"
-                    [minLenM]="5"
-                    [intervals]="strategyIntervals"
-                    (intervalsChange)="onIntervalsChange($event)"
-                    [defaultDtSlope]="defaultDtSlope"
-                    (defaultDtSlopeChange)="onDefaultDtSlopeChange($event)">
+                [distanceMax]="distanceMax"
+                [snapM]="1"
+                [minLenM]="5"
+                [intervals]="strategyIntervals"
+                (intervalsChange)="onIntervalsChange($event)"
+                [defaultDtSlope]="defaultDtSlope"
+                (defaultDtSlopeChange)="onDefaultDtSlopeChange($event)"
+                [defaultColor]="defaultColor"
+                (defaultColorChange)="onDefaultColorChange($event)">
                 </app-strategy-timeline>
+
                 </div>
 
 

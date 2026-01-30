@@ -8,9 +8,9 @@
         </div>
       </div>
 
-      <!-- Bouton & valeur dtSlope pour ajout run motor : -->
-      <div class="d-flex gap-2">
-        <!-- defaultDtSlope input -->
+      <!-- Paramètres par défaut + bouton d'ajout -->
+      <div class="d-flex gap-3 align-items-center flex-wrap">
+        <!-- dtSlope par défaut -->
         <div class="d-flex align-items-center gap-2">
           <label class="small text-muted m-0">dtSlope (s)</label>
           <input
@@ -21,6 +21,34 @@
             min="0"
             step="0.1"
           />
+        </div>
+
+        <!-- Couleur par défaut -->
+        <div class="d-flex align-items-center gap-2">
+          <label class="small text-muted m-0">Couleur</label>
+          <div class="color-picker">
+            <button
+              type="button"
+              class="color-dot dot-yellow"
+              [class.active]="defaultColor === 'yellow'"
+              (click)="setDefaultColor('yellow')"
+              title="Bouton jaune"
+            ></button>
+            <button
+              type="button"
+              class="color-dot dot-red"
+              [class.active]="defaultColor === 'red'"
+              (click)="setDefaultColor('red')"
+              title="Bouton rouge"
+            ></button>
+            <button
+              type="button"
+              class="color-dot dot-blue"
+              [class.active]="defaultColor === 'blue'"
+              (click)="setDefaultColor('blue')"
+              title="Bouton bleu"
+            ></button>
+          </div>
         </div>
 
         <!-- Bouton d'ajout -->
@@ -44,9 +72,10 @@
 
           <!-- Intervalles -->
           <ng-container *ngFor="let it of intervals; let i = index">
-            <!-- Segment rouge -->
+            <!-- Segment coloré -->
             <div
               class="segment"
+              [ngClass]="'seg-' + it.color"
               [style.left.%]="percentFromM(it.d)"
               [style.width.%]="percentFromM(it.f) - percentFromM(it.d)"
               (pointerdown)="onPointerDownSegment($event, i)"
@@ -75,8 +104,9 @@
               <div class="handle-value">{{ it.f | number:'1.0-0' }}</div>
             </div>
 
-            <!-- dtSlope + suppression -->
+            <!-- Outils intervalle : dtSlope + couleur + suppression -->
             <div class="interval-tools" [style.left.%]="percentFromM((it.d + it.f) / 2)">
+              <!-- dtSlope par intervalle -->
               <input
                 type="number"
                 class="form-control form-control-sm dt-slope-mini"
@@ -87,6 +117,32 @@
                 title="dtSlope (s)"
               />
 
+              <!-- Couleur par intervalle -->
+              <div class="color-picker mini">
+                <button
+                  type="button"
+                  class="color-dot dot-yellow"
+                  [class.active]="it.color === 'yellow'"
+                  (click)="setIntervalColor(i, 'yellow')"
+                  title="Jaune"
+                ></button>
+                <button
+                  type="button"
+                  class="color-dot dot-red"
+                  [class.active]="it.color === 'red'"
+                  (click)="setIntervalColor(i, 'red')"
+                  title="Rouge"
+                ></button>
+                <button
+                  type="button"
+                  class="color-dot dot-blue"
+                  [class.active]="it.color === 'blue'"
+                  (click)="setIntervalColor(i, 'blue')"
+                  title="Bleu"
+                ></button>
+              </div>
+
+              <!-- Suppression -->
               <button
                 type="button"
                 class="btn btn-sm btn-outline-danger btn-remove"

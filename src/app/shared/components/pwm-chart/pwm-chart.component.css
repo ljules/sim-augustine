@@ -1,0 +1,12 @@
+.pwm-chart-card {
+  padding: 0.75rem;
+}
+
+.pwm-chart-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.pwm-chart-canvas {
+  height: 160px; /* ajuste si tu veux */
+}

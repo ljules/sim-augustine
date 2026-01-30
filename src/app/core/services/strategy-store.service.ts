@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { StrategyConfig, Interval } from '../../domain/types';
+import { Interval } from '../../domain/types';
+import type { IntervalColor, StrategyConfig, SimResult } from '../../domain/types';
 
 const KEY = 'strategyConfig';
 
@@ -8,6 +9,8 @@ const KEY = 'strategyConfig';
 })
 export class StrategyStoreService {
   private cache: StrategyConfig | null = null;
+  private simResult: SimResult | null = null;
+
 
   get(): StrategyConfig {
     if (this.cache) return this.cache;
@@ -22,13 +25,14 @@ export class StrategyStoreService {
       return this.cache;
     }
 
-    // défaut MVP (nouveau modèle : dtSlope par intervalle)
+    // défaut MVP (dtSlope + color par intervalle)
     this.cache = {
       pwmOn: 1.0,
       defaultDtSlope: 5.0,
+      defaultColor: 'yellow',
       intervals: [
-        { d: 50, f: 200, dtSlope: 5.0 },
-        { d: 670, f: 880, dtSlope: 5.0 },
+        { d: 50, f: 200, dtSlope: 5.0, color: 'yellow' },
+        { d: 670, f: 880, dtSlope: 5.0, color: 'yellow' },
       ],
     };
 
@@ -44,6 +48,7 @@ export class StrategyStoreService {
 
   clear(): void {
     this.cache = null;
+    this.simResult = null;
     localStorage.removeItem(KEY);
   }
 
@@ -52,18 +57,24 @@ export class StrategyStoreService {
    * - ancien global dtSlope => utilisé comme fallback
    * - intervals anciens {d,f} => dtSlope injecté
    * - defaultDtSlope absent => fallback
+   * - color absent => injecté via defaultColor
    */
   private normalize(input: any): StrategyConfig {
     const pwmOn = Number.isFinite(Number(input?.pwmOn)) ? Number(input.pwmOn) : 1.0;
 
     // Ancien modèle : dtSlope global (si existait) => fallback
-    const legacyGlobalDtSlope = Number.isFinite(Number(input?.dtSlope)) ? Math.max(0, Number(input.dtSlope)) : undefined;
+    const legacyGlobalDtSlope = Number.isFinite(Number(input?.dtSlope))
+      ? Math.max(0, Number(input.dtSlope))
+      : undefined;
 
     // Nouveau champ defaultDtSlope (pour l'UI)
     const defaultDtSlope =
       Number.isFinite(Number(input?.defaultDtSlope))
         ? Math.max(0, Number(input.defaultDtSlope))
         : (legacyGlobalDtSlope ?? 0);
+
+    // Nouveau champ defaultColor (pour l'UI)
+    const defaultColor = this.normalizeColor(input?.defaultColor, 'yellow');
 
     const intervalsRaw = Array.isArray(input?.intervals) ? input.intervals : [];
 
@@ -76,7 +87,9 @@ export class StrategyStoreService {
           ? Math.max(0, Number(iv.dtSlope))
           : defaultDtSlope;
 
-      return { d, f, dtSlope };
+      const color = this.normalizeColor(iv?.color, defaultColor);
+
+      return { d, f, dtSlope, color } as Interval;
     });
 
     // On retourne un objet propre, sans legacy dtSlope
@@ -84,6 +97,7 @@ export class StrategyStoreService {
       ...input,
       pwmOn,
       defaultDtSlope,
+      defaultColor,
       intervals,
     };
 
@@ -92,4 +106,22 @@ export class StrategyStoreService {
 
     return out;
   }
+
+  // Normalise une couleur vers le set autorisé.
+  private normalizeColor(raw: any, fallback: IntervalColor): IntervalColor {
+    const v = String(raw ?? '').toLowerCase();
+    if (v === 'yellow' || v === 'red' || v === 'blue') return v;
+    return fallback;
+  }
+
+
+  setSimResult(result: SimResult): void {
+    this.simResult = result;
+  }
+
+
+  getSimResult(): SimResult | null {
+    return this.simResult;
+  }
+
 }
