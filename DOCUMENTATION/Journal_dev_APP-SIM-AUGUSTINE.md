@@ -145,3 +145,14 @@ npm i -D @types/papaparse
 ``` sh
 npm i chart.js
 ```
+
+
+### Publication GitHub Pages :
+
+Installation de l'outil de publication :
+
+``` sh
+ng add angular-cli-ghpages
+```
+
+Commande de publication : `ng deploy --base-href="https://ljules.github.io/sim-augustine/"`
