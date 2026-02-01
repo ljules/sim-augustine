@@ -8,12 +8,14 @@ import { GradeChartComponent } from '../../components/grade-chart/grade-chart.co
 import { CircuitMapComponent } from '../../components/circuit-map-component/circuit-map-component.component';
 import { StrategyStoreService } from '../../services/strategy-store.service';
 import type { StrategyConfig } from '../../domain/types';
+import { CircuitOsmMapComponent } from '../../components/circuit-osm-map/circuit-osm-map.component';
+import { CircuitRibbon3DComponent } from '../../components/circuit-ribbon3d/circuit-ribbon3d.component';
 
 
 @Component({
   selector: 'app-circuit-page',
   standalone: true,
-  imports: [CommonModule, AltitudeChartComponent, GradeChartComponent, CircuitMapComponent],
+  imports: [CommonModule, AltitudeChartComponent, GradeChartComponent, CircuitMapComponent, CircuitOsmMapComponent, CircuitRibbon3DComponent],
   templateUrl: './circuit-page.component.html',
   styleUrl: './circuit-page.component.css'
 })
@@ -38,6 +40,16 @@ export class CircuitPageComponent {
     gradeMinPct: number | null = null;
     gradeMaxPct: number | null = null;
     gradeAbsMeanPct: number | null = null; // moyenne de |pente|
+
+    // Circuit OpenMap :
+    circuitCenterLat = 0;
+    circuitCenterLng = 0;
+    circuitTrackLatLng: { lat: number; lng: number }[] = [];
+
+    // 3D ribbon settings
+    ribbonWidthMeters = 5;
+    verticalExaggeration = 2.5;
+    ribbonProgress01: number |null = null;
 
 
     constructor(
@@ -87,6 +99,7 @@ export class CircuitPageComponent {
     private setCircuit(c: CircuitProfile): void {
         this.circuit = c;
         this.computeStats(c);
+         this.buildOsmDataFromCircuit(c);
     }
 
     private clearStats(): void {
@@ -97,6 +110,13 @@ export class CircuitPageComponent {
         this.gradeMinPct = null;
         this.gradeMaxPct = null;
         this.gradeAbsMeanPct = null;
+
+        this.circuitCenterLat = 0;
+        this.circuitCenterLng = 0;
+        this.circuitTrackLatLng = [];
+
+        this.ribbonProgress01 = null;
+
 
     }
 
@@ -146,6 +166,50 @@ export class CircuitPageComponent {
         this.gradeAbsMeanPct = cnt > 0 ? absSum / cnt : null;
 
     }
+
+    private buildOsmDataFromCircuit(c: CircuitProfile): void {
+        const n = Math.min(c.lat.length, c.lon.length);
+
+        if (n <= 0) {
+            this.circuitCenterLat = 0;
+            this.circuitCenterLng = 0;
+            this.circuitTrackLatLng = [];
+            return;
+        }
+
+        // Optionnel : décimation pour perf si le CSV est très dense
+        // (ex: garder 1 point sur 3). Mets 1 si tu veux tout garder.
+        const step = 1;
+
+        const track: { lat: number; lng: number }[] = [];
+        let latSum = 0;
+        let lonSum = 0;
+        let cnt = 0;
+
+        for (let i = 0; i < n; i += step) {
+            const lat = c.lat[i];
+            const lon = c.lon[i];
+
+            // sécurité : ignore les valeurs non finies
+            if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+
+            track.push({ lat, lng: lon });
+            latSum += lat;
+            lonSum += lon;
+            cnt++;
+        }
+
+        this.circuitTrackLatLng = track;
+
+        if (cnt > 0) {
+            this.circuitCenterLat = latSum / cnt;
+            this.circuitCenterLng = lonSum / cnt;
+        } else {
+            this.circuitCenterLat = 0;
+            this.circuitCenterLng = 0;
+        }
+    }
+
 
     private computeGradePct(s: number[], z: number[]): number[] {
         const n = s.length;

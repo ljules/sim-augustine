@@ -6,10 +6,10 @@
 <div class="container py-3">
    <!-- TITRE -->
    <div>
-        <h2 class="mb-3">
+        <div class="mb-3 h5">
             <i class="bi bi-stopwatch-fill me-2"></i>
             Présentation de la Stratégie
-        </h2>
+        </div>
    </div>
 
     <!-- Cadre animation simulation -->
@@ -18,11 +18,11 @@
         <!-- Entête animation -->
         <div class="card mt-0 p-3 bg-light">
             <div class="d-flex align-items-center justify-content-between ">
-                <div class="fw-bold">
-                    <h4>
+                <div class="h6 fw-bold">
+                    <div>
                     <i class="bi bi-camera-video me-2"></i>
                     Animation de la simulation
-                    </h4>
+                    </div>
                 </div>
 
                 <!-- Bouton de contrôle de l'animation  -->
@@ -167,6 +167,7 @@
         </div>           
 
         <!-- AFFICHAGE DU CIRCUIT -->
+        <div class="width: w-70">
         <app-circuit-map-component
             [s]="circuit?.s ?? []"
             [utmX]="circuit?.utmX ?? []"
@@ -175,6 +176,7 @@
             [cursorDistance]="currentS"
             [cursorAvatarUrl]="pilotBadgeUrl">
         </app-circuit-map-component>
+        </div>
 
         <div class="mt-0 ms-4 mb-4">
             <div class="text-muted fw-bold mb-2">
@@ -208,11 +210,11 @@
     <div class="card mt-3 p-0">
         <div class="p-3 bg-body-tertiary">
         <div class="align-items-center justify-content-between mb-2">
-            <div class="fw-bold">
-                <h4>
+            <div class="h5 fw-bold">
+                <div>
                 <i class="bi bi-list-check me-4"></i>
                 Consignes de pilotage
-                </h4>
+                </div>
             </div>
             <div class="small text-muted" *ngIf="pilotRows.length">
                 {{ pilotRows.length }} rampe(s)

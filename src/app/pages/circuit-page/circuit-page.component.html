@@ -1,10 +1,10 @@
 <div class="container py-3">
 
     <!-- Titre -->
-    <h4 class="mb-3">
+    <div class="mb-3 h5 fw-bold">
         <i class="bi bi-map me-2"></i>
         Circuit
-    </h4>
+    </div>
 
     <!-- Import CSV -->
     <div class="card mb-3">
@@ -103,23 +103,54 @@
 
 
     <!-- Tracé du circuit -->
-    <div
-        *ngIf="circuit as c"
-        class="card">
+    <div class="row g-3">
+    <!-- <div *ngIf="circuit as c" class="col-12">
+        <div class="card">
         <div class="card-header h6">Vue 2D du circuit</div>
         <div class="card-body" style="height: 220px">
             <app-circuit-map-component
-                [s]="c.s"
-                [utmX]="c.utmX"
-                [utmY]="c.utmY"
-                [intervals]="strategyConfig.intervals"
-                [keepEveryMeters]="1"
-                [arrowAtDistance]="35"
-                [arrowSize]="15">
+            [s]="c.s"
+            [utmX]="c.utmX"
+            [utmY]="c.utmY"
+            [intervals]="strategyConfig.intervals"
+            [keepEveryMeters]="1"
+            [arrowAtDistance]="35"
+            [arrowSize]="15">
             </app-circuit-map-component>
+        </div>
+        </div>
+    </div> -->
+
+    <!-- Carte OpenMap -->
+    <div *ngIf="circuitTrackLatLng.length > 0" class="col-12">
+        <div class="card">
+        <div class="card-header h6">Carte (OpenStreetMap)</div>
+        <div class="card-body p-0">
+            <app-circuit-osm-map
+            [center]="{ lat: circuitCenterLat, lng: circuitCenterLng }"
+            [track]="circuitTrackLatLng">
+            </app-circuit-osm-map>
+        </div>
         </div>
     </div>
 
+    <!-- Circuit 3D -->
+    <div *ngIf="circuit as c" class="col-12">
+    <div class="card">
+        <div class="card-header h6">Vue 3D (ruban)</div>
+        <div class="card-body p-0">
+        <app-circuit-ribbon3d
+            [circuit]="c"
+            [ribbonWidthMeters]="ribbonWidthMeters"
+            [verticalExaggeration]="verticalExaggeration"
+            [progress01]="ribbonProgress01">
+        </app-circuit-ribbon3d>
+        </div>
+    </div>
+    </div>
+
+    </div>
+     
 
 
     <!-- Graphes -->

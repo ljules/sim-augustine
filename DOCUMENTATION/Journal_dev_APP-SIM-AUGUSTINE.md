@@ -61,27 +61,29 @@ ng g component pages/simulation-page --standalone
 #### Composants partagés (Interface Utilisateur) :
 
 ``` sh
-ng g component shared/components/navbar --standalone
-ng g component shared/components/footer --standalone
-ng g component shared/components/altitude-chart --standalone
-ng g component shared/components/grade-chart --standalone
-ng g component shared/components/strategy-timeline --standalone
-ng g component shared/components/speed-chart --standalone
-ng g component shared/components/current-chart --standalone
-ng g component shared/components/energy-chart --standalone
-ng g component shared/components/CircuitMapComponent --standalone
-ng g component shared/components/dual-speed-altitude-chart --standalone
-ng g component shared/components/pwm-chart --standalone
+ng g component components/navbar --standalone
+ng g component components/footer --standalone
+ng g component components/altitude-chart --standalone
+ng g component components/grade-chart --standalone
+ng g component components/strategy-timeline --standalone
+ng g component components/speed-chart --standalone
+ng g component components/current-chart --standalone
+ng g component components/energy-chart --standalone
+ng g component components/CircuitMapComponent --standalone
+ng g component components/dual-speed-altitude-chart --standalone
+ng g component components/pwm-chart --standalone
+ng g component components/circuit-osm-map --standalone
+ng g component components/circuitRibbon3d --standalone
 ```
 
 #### Génération des services (état + persistance avec *local storage*) :
 
 ``` sh
-ng g service core/services/circuit-store
-ng g service core/services/vehicle-store
-ng g service core/services/strategy-store
-ng g service core/services/export
-ng g service core/services/circuit-csv-parser
+ng g service services/circuit-store
+ng g service services/vehicle-store
+ng g service services/strategy-store
+ng g service services/export
+ng g service services/circuit-csv-parser
 
 ```
 
@@ -144,6 +146,32 @@ npm i -D @types/papaparse
 
 ``` sh
 npm i chart.js
+```
+
+### leaflet (affichage carte) :
+
+``` sh
+npm i leaflet
+npm install --save-dev @types/leaflet
+
+```
+
+Puis ajout dans la configuration de styles dans `angular.json`:
+
+``` sh
+"styles": [
+  "src/styles.css",
+  "node_modules/leaflet/dist/leaflet.css"
+]
+
+```
+
+###thre (affichage 3D):
+
+``` sh
+npm i three
+npm i --save-dev @types/three
+
 ```
 
 

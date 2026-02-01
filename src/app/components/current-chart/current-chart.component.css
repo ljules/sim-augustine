@@ -1,7 +1,7 @@
 .chart-wrap {
   position: relative;
   width: 100%;
-  height: 260px;
+  height: 200px;
 }
 .chart-wrap canvas {
   position: absolute;
