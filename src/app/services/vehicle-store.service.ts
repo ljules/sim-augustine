@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MotorConfig, VehicleConfig, VehicleFullConfig } from '../../domain/types';
+import { MotorConfig, VehicleConfig, VehicleFullConfig } from '../domain/types';
 
 const KEY = 'vehicleFullConfig';
 const TWO_PI = 2 * Math.PI;
@@ -8,7 +8,7 @@ const TWO_PI = 2 * Math.PI;
 const DEFAULT_MOTOR: MotorConfig = {
   kuRpmPerV: 102,
   ke: 60 / (102 * TWO_PI),      // ke = 60/(ku*2*pi)
-  kc: 93.4 / 1000,
+  kc: Math.round((93.4 / 1000)*10000)/10000,
   rm: 0.608,
   lm: 0.423e-3,
   jm: 542e-7,
@@ -17,6 +17,10 @@ const DEFAULT_MOTOR: MotorConfig = {
   maxVoltage: 48,               // Maxon RE50 48V
 };
 
+
+const DEFAULT_Z_PIGNON = 13;
+const DEFAULT_Z_COURONNE = 210;
+
 const DEFAULT_VEHICLE: VehicleConfig = {
   m: 80.0,
   g: 9.81,
@@ -24,7 +28,9 @@ const DEFAULT_VEHICLE: VehicleConfig = {
   rho: 1.21,
   s: 0.656,
   cx: 0.0632,
-  r_red: 210 / 13,
+  z_pignon: DEFAULT_Z_PIGNON,
+  z_couronne: DEFAULT_Z_COURONNE,  
+  r_red: DEFAULT_Z_COURONNE / DEFAULT_Z_PIGNON,
   r_roue: 0.480 / 2,
   fv: 0.0,
 };

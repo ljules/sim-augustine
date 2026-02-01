@@ -21,7 +21,7 @@ import {
     Legend,
 } from 'chart.js';
 
-import type { SimPoint } from '../../../domain/types';
+import type { SimPoint } from '../../domain/types';
 
 Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
 

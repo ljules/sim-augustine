@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { Interval, IntervalColor } from '../../../domain/types';
+import { Interval, IntervalColor } from '../../domain/types';
 
 type DragMode = 'none' | 'handle-d' | 'handle-f' | 'segment';
 

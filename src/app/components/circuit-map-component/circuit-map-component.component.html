@@ -39,17 +39,53 @@
       vector-effect="non-scaling-stroke"
     ></circle>
 
-    <!-- Point mobile (curseur / animation) -->
+    <!-- Avatar du véhicule (pastille) -->
+    <ng-container *ngIf="cursor as c">
+    <defs>
+        <!-- Clip circulaire pour l’avatar -->
+        <clipPath id="pilotAvatarClip" clipPathUnits="userSpaceOnUse">
+        <circle [attr.cx]="c.x" [attr.cy]="c.y" [attr.r]="15"></circle>
+        </clipPath>
+    </defs>
+
+    <!-- Si avatar choisi, on affiche l'image -->
+    <image
+        *ngIf="cursorAvatarUrl; else fallbackDot"
+        [attr.href]="cursorAvatarUrl"
+        [attr.x]="c.x - 15"
+        [attr.y]="c.y - 15"
+        [attr.width]="30"
+        [attr.height]="30"
+        preserveAspectRatio="xMidYMid slice"
+        clip-path="url(#pilotAvatarClip)"
+    ></image>
+
+    <!-- Petit contour pour bien voir la pastille -->
     <circle
-        *ngIf="cursor"
-        [attr.cx]="cursor.x"
-        [attr.cy]="cursor.y"
+        *ngIf="cursorAvatarUrl"
+        [attr.cx]="c.x"
+        [attr.cy]="c.y"
+        r="15"
+        fill="none"
+        stroke="black"
+        stroke-width="2"
+        vector-effect="non-scaling-stroke"
+    ></circle>
+
+    <!-- fallback : cercle classique -->
+    <ng-template #fallbackDot>
+        <circle
+        [attr.cx]="c.x"
+        [attr.cy]="c.y"
         r="9"
         fill="white"
         stroke="black"
         stroke-width="2"
         vector-effect="non-scaling-stroke"
-    ></circle>
+        ></circle>
+    </ng-template>
+    </ng-container>
+
 
 
     <!-- Flèche de sens du parcours : -->

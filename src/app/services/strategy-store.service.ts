@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Interval } from '../../domain/types';
-import type { IntervalColor, StrategyConfig, SimResult } from '../../domain/types';
+import { Interval } from '../domain/types';
+import type { IntervalColor, StrategyConfig, SimResult } from '../domain/types';
 
 const KEY = 'strategyConfig';
+const KEY_BADGE = 'pilotBadge';
+
 
 @Injectable({
   providedIn: 'root'
@@ -123,5 +125,22 @@ export class StrategyStoreService {
   getSimResult(): SimResult | null {
     return this.simResult;
   }
+
+  
+   private pilotBadge: string | null = null;
+
+   setPilotBadge(fileName: string | null): void {
+        this.pilotBadge = fileName;
+        if (!fileName) localStorage.removeItem(KEY_BADGE);
+        else localStorage.setItem(KEY_BADGE, fileName);
+  }
+
+   getPilotBadge(): string | null {
+        if (this.pilotBadge !== null) return this.pilotBadge;
+        const raw = localStorage.getItem(KEY_BADGE);
+        this.pilotBadge = raw ? raw : null;
+        return this.pilotBadge;
+   }
+
 
 }

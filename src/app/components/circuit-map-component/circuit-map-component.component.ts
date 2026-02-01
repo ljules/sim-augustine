@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
-import type { Interval, IntervalColor } from '../../../domain/types';
+import type { Interval, IntervalColor } from '../../domain/types';
 
 type Pt = { x: number; y: number; s: number };      // UTM + distance
 type Pt2 = { x: number; y: number; s: number };     // projeté (SVG) + distance
@@ -18,6 +18,8 @@ type HighlightPath = {
   templateUrl: './circuit-map-component.component.html',
   styleUrl: './circuit-map-component.component.css'
 })
+
+
 export class CircuitMapComponent implements OnChanges {
   /** Distances (m) : DOIT être trié croissant */
   @Input() s: number[] = [];
@@ -47,6 +49,10 @@ export class CircuitMapComponent implements OnChanges {
 
   /** Position du curseur (animation) */
   @Input() cursorDistance  = 0;
+
+  /** Avatar du pilote */
+  @Input() cursorAvatarUrl: string | null = null;
+
 
   circuitPath = '';
   highlightPaths: HighlightPath[] = [];

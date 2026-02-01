@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CircuitProfile } from '../../domain/types';
+import { CircuitProfile } from '../domain/types';
 
 const KEY = 'circuitProfile';
 

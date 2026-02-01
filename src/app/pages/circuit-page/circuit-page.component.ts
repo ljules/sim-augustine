@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { CircuitStoreService } from '../../core/services/circuit-store.service';
-import { CircuitCsvParserService } from '../../core/services/circuit-csv-parser.service';
+import { CircuitStoreService } from '../../services/circuit-store.service';
+import { CircuitCsvParserService } from '../../services/circuit-csv-parser.service';
 import { CircuitProfile } from '../../domain/types';
 import { CommonModule } from '@angular/common';
-import { AltitudeChartComponent } from '../../shared/components/altitude-chart/altitude-chart.component';
-import { GradeChartComponent } from '../../shared/components/grade-chart/grade-chart.component';
-import { CircuitMapComponent } from '../../shared/components/circuit-map-component/circuit-map-component.component';
-import { StrategyStoreService } from '../../core/services/strategy-store.service';
+import { AltitudeChartComponent } from '../../components/altitude-chart/altitude-chart.component';
+import { GradeChartComponent } from '../../components/grade-chart/grade-chart.component';
+import { CircuitMapComponent } from '../../components/circuit-map-component/circuit-map-component.component';
+import { StrategyStoreService } from '../../services/strategy-store.service';
 import type { StrategyConfig } from '../../domain/types';
 
 

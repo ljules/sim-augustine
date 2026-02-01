@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import Papa from 'papaparse';
-import { CircuitProfile } from '../../domain/types';
+import { CircuitProfile } from '../domain/types';
 
 type ShellCircuitRow = {
     'Distance from Lap Line (m)': number;

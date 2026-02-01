@@ -31,15 +31,17 @@ export type MotorConfig = {
 
 // Type objet pour la modélisation du véhicule :
 export type VehicleConfig = {
-  m: number;           // kg
-  g: number;           // m/s²
-  fs: number;          // coeff frottements secs (roulement)
-  rho: number;         // kg/m³
-  s: number;           // surface frontale m²
-  cx: number;          // coeff traînée
-  r_red: number;       // rapport réducteur
-  r_roue: number;      // m
-  fv: number;          // N.s/m
+  m: number;            // kg
+  g: number;            // m/s²
+  fs: number;           // coeff frottements secs (roulement)
+  rho: number;          // kg/m³
+  s: number;            // surface frontale m²
+  cx: number;           // coeff traînée
+  z_pignon: number;      // nombre de dents du pigon moteur
+  z_couronne: number;    // nombre de dents de la couronne 
+  r_red: number;        // rapport réducteur
+  r_roue: number;       // m
+  fv: number;           // N.s/m
 };
 
 

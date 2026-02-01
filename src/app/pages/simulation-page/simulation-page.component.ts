@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { CircuitStoreService } from '../../core/services/circuit-store.service';
-import { StrategyStoreService } from '../../core/services/strategy-store.service';
-import { VehicleStoreService } from '../../core/services/vehicle-store.service';
+import { CircuitStoreService } from '../../services/circuit-store.service';
+import { StrategyStoreService } from '../../services/strategy-store.service';
+import { VehicleStoreService } from '../../services/vehicle-store.service';
 
 import { Circuit } from '../../domain/circuit/circuit';
 import { Motor } from '../../domain/vehicle/motor';
@@ -14,13 +14,13 @@ import { IntervalStrategy } from '../../domain/strategy/interval-strategy';
 import { simulateEulerIntervals, simulateRK4Intervals } from '../../domain/simulation/simulate-intervals';
 import type { SimResult, StrategyConfig, Interval, IntervalColor } from '../../domain/types';
 
-import { SpeedChartComponent } from '../../shared/components/speed-chart/speed-chart.component';
-import { AltitudeChartComponent } from '../../shared/components/altitude-chart/altitude-chart.component';
-import { CurrentChartComponent } from '../../shared/components/current-chart/current-chart.component';
-import { EnergyChartComponent } from '../../shared/components/energy-chart/energy-chart.component';
-import { StrategyTimelineComponent } from '../../shared/components/strategy-timeline/strategy-timeline.component';
-import { DualSpeedAltitudeChartComponent } from '../../shared/components/dual-speed-altitude-chart/dual-speed-altitude-chart.component';
-import { PwmChartComponent } from '../../shared/components/pwm-chart/pwm-chart.component';
+import { SpeedChartComponent } from '../../components/speed-chart/speed-chart.component';
+import { AltitudeChartComponent } from '../../components/altitude-chart/altitude-chart.component';
+import { CurrentChartComponent } from '../../components/current-chart/current-chart.component';
+import { EnergyChartComponent } from '../../components/energy-chart/energy-chart.component';
+import { StrategyTimelineComponent } from '../../components/strategy-timeline/strategy-timeline.component';
+import { DualSpeedAltitudeChartComponent } from '../../components/dual-speed-altitude-chart/dual-speed-altitude-chart.component';
+import { PwmChartComponent } from '../../components/pwm-chart/pwm-chart.component';
 
 type SolverMethod = 'Euler' | 'RK4';
 type ComputeMode = 'live' | 'deferred';

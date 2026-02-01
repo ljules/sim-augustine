@@ -1,160 +1,315 @@
 <div class="container py-3">
-  <h2 class="mb-3">
-    <i class="bi bi-ev-front-fill me-2"></i>
-    Véhicule & Moteur (modèle Python)
-  </h2>
+    <h4 class="mb-3">
+        <i class="bi bi-ev-front-fill me-2"></i>
+        Paramètres du modèlisation du véhicule
+    </h4>
 
-  <div *ngIf="message" class="alert alert-success py-2">
-    <i class="bi bi-check-circle me-2"></i>{{ message }}
-  </div>
-
-  <!-- MOTEUR -->
-  <div class="card mb-3">
-    <div class="card-body">
-      <h5 class="card-title mb-3">
-        <i class="bi bi-lightning-charge me-2"></i>
-        Moteur (Maxon RE50 48V)
-      </h5>
-
-      <div class="row g-3">
-        <div class="col-md-3">
-          <label class="form-label">Tension max (V)</label>
-          <input class="form-control" type="number" step="0.1"
-                 [(ngModel)]="cfg.motor.maxVoltage" name="maxVoltage">
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">ku ((tr/min)/V)</label>
-          <input class="form-control" type="number" step="0.1"
-                 [(ngModel)]="cfg.motor.kuRpmPerV" name="kuRpmPerV"
-                 (ngModelChange)="onKuChanged()">
-          <div class="form-text">ke est recalculé automatiquement.</div>
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">ke (V/(rad/s))</label>
-          <input class="form-control" type="number" step="0.000001"
-                 [(ngModel)]="cfg.motor.ke" name="ke" disabled>
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">kc (Nm/A)</label>
-          <input class="form-control" type="number" step="0.0001"
-                 [(ngModel)]="cfg.motor.kc" name="kc">
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">rm (Ω)</label>
-          <input class="form-control" type="number" step="0.001"
-                 [(ngModel)]="cfg.motor.rm" name="rm">
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">lm (H)</label>
-          <input class="form-control" type="number" step="0.000001"
-                 [(ngModel)]="cfg.motor.lm" name="lm">
-          <div class="form-text">Ignorée en MVP (sans inductance).</div>
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">jm (kg·m²)</label>
-          <input class="form-control" type="number" step="0.0000001"
-                 [(ngModel)]="cfg.motor.jm" name="jm">
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">fvm (Nm·s/rad)</label>
-          <input class="form-control" type="number" step="0.0000001"
-                 [(ngModel)]="cfg.motor.fvm" name="fvm">
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">cs (Nm)</label>
-          <input class="form-control" type="number" step="0.0001"
-                 [(ngModel)]="cfg.motor.cs" name="cs">
-        </div>
-      </div>
+    <div *ngIf="message" class="alert alert-success py-2">
+        <i class="bi bi-check-circle me-2"></i>{{ message }}
     </div>
-  </div>
 
-  <!-- VEHICULE -->
-  <div class="card mb-3">
-    <div class="card-body">
-      <h5 class="card-title mb-3">
-        <i class="bi bi-gear me-2"></i>
-        Véhicule
-      </h5>
+    <!-- MOTEUR -->
+    <div class="card mt-4 mb-4">
+        <div class="card-body p-0">
+            <div class="card-header h6 fw-bold bg-body-secondary">
+                <i class="bi bi-lightning-charge me-2"></i>
+                Paramètres de modélisation du moteur
+            </div>
 
-      <div class="row g-3">
-        <div class="col-md-3">
-          <label class="form-label">m (kg)</label>
-          <input class="form-control" type="number" step="0.1"
-                 [(ngModel)]="cfg.vehicle.m" name="m">
+            <div class="row m-2">
+                <div class="col-md-2">
+                    <label class="form-label small"><b>U<sub>nom.</sub></b> (V) :</label>    
+                    <input    class="form-control"
+                                style="width: 5em; height: 1.7em;"
+                                type="number"
+                                step="0.1"
+                                title="Tension nominale du moteur en volt"
+                                [(ngModel)]="cfg.motor.maxVoltage"
+                                name="maxVoltage">           
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label small"><b>k<sub>u</sub></b> ((tr/min)/V)</label>                
+                        <input    class="form-control"
+                                    style="width: 5em; height: 1.7em;"
+                                    type="number" step="0.1"
+                                    [(ngModel)]="cfg.motor.kuRpmPerV"
+                                    name="kuRpmPerV"
+                                    title="Contante de vitesse du constructeur (tr/min)/V"
+                                    (ngModelChange)="onKuChanged()">        
+                </div>
+
+                <!-- <div class="col-md-3">
+                <label class="form-label">ke (V/(rad/s))</label>
+                <input class="form-control" type="number" step="0.000001"
+                        [(ngModel)]="cfg.motor.ke" name="ke" disabled>
+                <div class="form-text">ke est recalculé automatiquement.</div>
+                </div> -->
+
+                <div class="col-md-2">
+                    <label class="form-label small"><b>k<sub>c</sub></b> (Nm/A)</label>                
+                    <input
+                            class="form-control"
+                            style="width: 6em; height: 1.7em;"
+                            type="number"
+                            step="0.0001"
+                            title="Constante de courant du moteur (Nm/A)"
+                            [(ngModel)]="cfg.motor.kc"
+                            name="kc">
+                    
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label"><b>R<sub>m</sub></b> (Ω)</label>
+                    <input
+                            class="form-control"
+                            style="width: 5em; height: 1.7em;"
+                            type="number"
+                            step="0.001"
+                            title="Résistance du bobinage (Ω)"
+                            [(ngModel)]="cfg.motor.rm"
+                            name="rm">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label"><b>L<sub>m</sub></b> (H)</label>
+                    <input
+                            class="form-control"
+                            style="width: 7em; height: 1.7em;"
+                            type="number"
+                            step="0.000001"
+                            title="Inductance en (H)"
+                            [(ngModel)]="cfg.motor.lm"
+                            name="lm">
+                    <div class="form-text">Ignorée (modèle sans inductance).</div>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label"><b>J<sub>m</sub></b> (kg·m²)</label>
+                    <input
+                            class="form-control"
+                            style="width: 7em; height: 1.7em;"
+                            type="number"
+                            step="0.0000001"
+                            title="Inertie du rotor (kg.m²)"
+                            [(ngModel)]="cfg.motor.jm"
+                            name="jm">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label"><b>f<sub>vm</sub></b> (Nm·s/rad)</label>
+                    <input 
+                            class="form-control"
+                            style="width: 8em; height: 1.7em;"
+                            type="number"
+                            step="0.0000001"
+                            title="Frottements visqeux du moteur (Nm.s/rad)"
+                            [(ngModel)]="cfg.motor.fvm"
+                            name="fvm">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label"><b>c<sub>s</sub></b> (Nm)</label>
+                    <input
+                            class="form-control"
+                            style="width: 8em; height: 1.7em;"
+                            type="number"
+                            step="0.0001"
+                            title="Frottements secs du moteur (Nm)"
+                            [(ngModel)]="cfg.motor.cs"
+                            name="cs">
+                </div>
+
+            </div>
+
+            <!-- Image illustration modèle moteur -->
+            <div class="row justify-content-center mt-4">
+            <img 
+                src="./assets/img/schemas/schema_modele_moteur.png"
+                alt="Image du modèle moteur"                
+                class="w-100"
+                style="max-width: 600px;">
+            </div>
+
+        </div> <!-- Fin card-body -->        
+    </div> <!-- Fin card -->
+
+
+
+    <!-- VEHICULE -->
+    <div class="card mt-4 mb-4">
+        <div class="card-body p-0">
+
+            <div class="card-header h6 fw-bold bg-body-secondary">
+                <i class="bi bi-ev-front me-2"></i>
+                Paramètres de modélisation du châssis
+            </div>
+
+            <div class="row m-2">
+                <div class="col-md-2">
+                    <label class="form-label small"><b>m</b> (kg)</label>
+                    <input
+                        class="form-control"
+                        type="number"
+                        step="0.1"
+                        style="width: 5em; height: 1.7em;"
+                        title="Masse du véhicule + du pilote (kg)"
+                        [(ngModel)]="cfg.vehicle.m"
+                        name="m">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label small"><b>g</b> (m/s²)</label>
+                    <input 
+                        class="form-control"
+                        type="number"
+                        step="0.01"
+                        style="width: 5em; height: 1.7em;"
+                        title="Accélération du champ de pesanteur (m/s²)"
+                        [(ngModel)]="cfg.vehicle.g"
+                        name="g">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label small"><b>f<sub>s</sub></b> (coef.)</label>
+                    <input 
+                        class="form-control"
+                        type="number"
+                        step="0.0001"
+                        style="width: 5em; height: 1.7em;"
+                        title="Coefficient de roulement (sans dim.)"
+                        [(ngModel)]="cfg.vehicle.fs"
+                        name="fs">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label small"><b>f<sub>v</sub></b> (N·s/m)</label>
+                    <input
+                        class="form-control"
+                        type="number"
+                        step="0.0001"
+                        style="width: 5em; height: 1.7em;"
+                        title="Coeffecient de frottements visqueux (N.s/m)"
+                        [(ngModel)]="cfg.vehicle.fv"
+                        name="fv">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label small"><b>ρ</b> (kg/m³)</label>
+                    <input
+                        class="form-control"
+                        type="number"
+                        step="0.01"
+                        style="width: 5em; height: 1.7em;"
+                        title="Masse volumique de l'air (kg/m^3)"
+                        [(ngModel)]="cfg.vehicle.rho"
+                        name="rho">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label small"><b>S</b> (m²)</label>
+                    <input 
+                        class="form-control"
+                        type="number"
+                        step="0.001"
+                        style="width: 5em; height: 1.7em;"
+                        title="Surface projetée du véhicule (m²)"
+                        [(ngModel)]="cfg.vehicle.s"
+                        name="s">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label small"><b>C</b><sub>x</sub></label>
+                    <input
+                        class="form-control"
+                        type="number"
+                        step="0.0001"
+                        style="width: 6em; height: 1.7em;"
+                        title="Coefficient de traînée aérodynamique (sans dim.)"
+                        [(ngModel)]="cfg.vehicle.cx"
+                        name="cx">
+                </div>
+
+
+                <div class="col-md-2">
+                    <label class="form-label small"><b>z<sub>couronne</sub></b></label>
+                    <input
+                        class="form-control"
+                        type="number"
+                        step="1"
+                        style="width: 5em; height: 1.7em;"
+                        title="Nombre de dents de la couronne"
+                        [(ngModel)]="cfg.vehicle.z_couronne"
+                        (ngModelChange)="onTeethChanged()"
+                        name="z_couronne">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label small"><b>z<sub>pignon</sub></b></label>
+                    <input
+                        class="form-control"
+                        type="number"
+                        step="1"
+                        style="width: 5em; height: 1.7em;"
+                        title="Nombre de dents du pignon moteur"
+                        [(ngModel)]="cfg.vehicle.z_pignon" 
+                        (ngModelChange)="onTeethChanged()"                      
+                        name="z_pignon">
+                </div>
+
+
+                <div class="col-md-2">
+                    <label class="form-label small"><b>r<sub>red</sub></b></label>
+                    <input
+                        class="form-control"
+                        type="number"
+                        step="0.001"
+                        style="width: 6em; height: 1.7em;"
+                        title="Rapport de réduction calculée (Zcouronne / Zpignon)"
+                        disabled
+                        [ngModel]="r_red_display"
+                        name="r_red">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label small"><b>r</b><sub>roue</sub> (m)</label>
+                    <input 
+                        class="form-control"
+                        type="number"
+                        step="0.001"
+                        style="width: 5em; height: 1.7em;"
+                        title="Rayon de la roue motrice arrière (m)"
+                        [(ngModel)]="cfg.vehicle.r_roue"
+                        name="r_roue">
+                </div>
+            </div>
+
+            <!-- Image illustration modèle châssis -->
+            <div class="row justify-content-center mt-4">
+                <img 
+                    src="./assets/img/schemas/schema_modele_chassis.png"
+                    alt="Image du modèle châssis"                
+                    class="w-100"
+                    style="max-width: 600px;">
+            </div>
+
+
         </div>
-
-        <div class="col-md-3">
-          <label class="form-label">g (m/s²)</label>
-          <input class="form-control" type="number" step="0.01"
-                 [(ngModel)]="cfg.vehicle.g" name="g">
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">fs (roulement)</label>
-          <input class="form-control" type="number" step="0.0001"
-                 [(ngModel)]="cfg.vehicle.fs" name="fs">
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">fv (N·s/m)</label>
-          <input class="form-control" type="number" step="0.0001"
-                 [(ngModel)]="cfg.vehicle.fv" name="fv">
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">rho (kg/m³)</label>
-          <input class="form-control" type="number" step="0.01"
-                 [(ngModel)]="cfg.vehicle.rho" name="rho">
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">S (m²)</label>
-          <input class="form-control" type="number" step="0.001"
-                 [(ngModel)]="cfg.vehicle.s" name="s">
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">Cx</label>
-          <input class="form-control" type="number" step="0.0001"
-                 [(ngModel)]="cfg.vehicle.cx" name="cx">
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">r_red</label>
-          <input class="form-control" type="number" step="0.0001"
-                 [(ngModel)]="cfg.vehicle.r_red" name="r_red">
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">r_roue (m)</label>
-          <input class="form-control" type="number" step="0.001"
-                 [(ngModel)]="cfg.vehicle.r_roue" name="r_roue">
-        </div>
-      </div>
     </div>
-  </div>
 
-  <!-- Actions -->
-  <div class="d-flex gap-2 flex-wrap">
-    <button type="button" class="btn btn-primary" (click)="save()">
-      <i class="bi bi-save me-1"></i> Enregistrer
-    </button>
+    <!-- Actions -->
+    <div class="d-flex gap-2 flex-wrap">
+        <button type="button" class="btn btn-sm btn-primary" (click)="save()">
+        <i class="bi bi-save me-1"></i> Enregistrer
+        </button>
 
-    <button type="button" class="btn btn-outline-secondary" (click)="reload()">
-      <i class="bi bi-arrow-clockwise me-1"></i> Recharger
-    </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="reload()">
+        <i class="bi bi-arrow-clockwise me-1"></i> Recharger
+        </button>
 
-    <button type="button" class="btn btn-outline-danger" (click)="resetDefaults()">
-      <i class="bi bi-trash me-1"></i> Réinitialiser (défauts Python)
-    </button>
-  </div>
+        <button type="button" class="btn btn-sm btn-outline-danger" (click)="resetDefaults()">
+        <i class="bi bi-trash me-1"></i> Réinitialiser
+        </button>
+    </div>
+
 </div>

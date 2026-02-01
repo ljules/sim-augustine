@@ -12,7 +12,7 @@
         </h2>
    </div>
 
-    <!-- Cardre animation simulation -->
+    <!-- Cadre animation simulation -->
     <div class="card p-0">
         
         <!-- Entête animation -->
@@ -45,25 +45,58 @@
                 </div>
             </div>
 
-            <!-- Contrôle de la vitesse de lecture  -->
-            <div class="d-flex align-items-center">
-                <div class="d-flex align-items-center gap-2 mt-1 ms-auto">
-                    <label class="small text-muted mb-0">Vitesse</label>
+            <!-- Contrôle de la vitesse de lecture & Choix avatar pilote  -->
+            <div class="d-flex align-items-center mt-2 px-3">
 
-                    <select
-                    class="form-select form-select-sm"
-                    style="width: 70px;"
-                    [ngModel]="playbackRate"
-                    (ngModelChange)="playbackRate = $event"
-                    >
-                    <option *ngFor="let r of playbackRates" [ngValue]="r">
-                        {{ r }}x
-                    </option>
-                    </select>
+                <!-- Bloc gauche : avatars -->
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <div class="small text-muted fw-bold me-2">
+                        Avatar du pilote :
+                    </div>
+
+                    <!-- Aucun avatar -->
+                    <div
+                        class="pilot-badge none"
+                        [class.selected]="pilotBadgeFile === null"
+                        (click)="onPilotBadgeChange(null)"
+                        title="Aucun avatar">
+                        <span>◯</span>
+                    </div>
+
+                    <!-- Avatars -->
+                    <div
+                        *ngFor="let badge of pilotBadges"
+                        class="pilot-badge"
+                        [class.selected]="pilotBadgeFile === badge"
+                        (click)="onPilotBadgeChange(badge)"
+                        [title]="badge">
+                        <img
+                            [src]="'assets/img/badges-pilote/' + badge"
+                            alt="avatar pilote" />
+                    </div>
                 </div>
-            </div>
 
+                <!-- Bloc droite : vitesse (poussé à droite) -->
+                <div class="d-flex align-items-center gap-2 ms-auto">
+                    <div class="small text-muted fw-bold mb-0 d-none d-xl-block">
+                        Vitesse :
+                    </div>
+                    
+                    <select
+                        class="form-select form-select-sm"
+                        style="width: 70px;"
+                        [ngModel]="playbackRate"
+                        (ngModelChange)="playbackRate = $event"
+                        title="Vitesse de lecture">
+                        <option *ngFor="let r of playbackRates" [ngValue]="r">
+                            {{ r }}x
+                        </option>                        
+                    </select>                    
+                </div>
 
+        </div>
+
+            
             <div class="container ms-2 pe-4">
                 <!-- Slider temps (scrub) -->
                 <div class="mt-2">
@@ -133,12 +166,14 @@
 
         </div>           
 
+        <!-- AFFICHAGE DU CIRCUIT -->
         <app-circuit-map-component
             [s]="circuit?.s ?? []"
             [utmX]="circuit?.utmX ?? []"
             [utmY]="circuit?.utmY ?? []"
             [intervals]="cfg.intervals"
-            [cursorDistance]="currentS">
+            [cursorDistance]="currentS"
+            [cursorAvatarUrl]="pilotBadgeUrl">
         </app-circuit-map-component>
 
         <div class="mt-0 ms-4 mb-4">

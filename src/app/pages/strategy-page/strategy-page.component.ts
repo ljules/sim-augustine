@@ -2,12 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { StrategyStoreService } from '../../core/services/strategy-store.service';
-import { CircuitStoreService } from '../../core/services/circuit-store.service';
+import { StrategyStoreService } from '../../services/strategy-store.service';
+import { CircuitStoreService } from '../../services/circuit-store.service';
 import { StrategyConfig } from '../../domain/types';
 
 import type { CircuitProfile, SimResult, SimPoint } from '../../domain/types';
-import { CircuitMapComponent } from '../../shared/components/circuit-map-component/circuit-map-component.component';
+import { CircuitMapComponent } from '../../components/circuit-map-component/circuit-map-component.component';
 
 
 // Type interne pour le tableau :
@@ -39,12 +39,29 @@ export class StrategyPageComponent {
     simResult: SimResult | null = null;
     points: SimPoint[] = [];
 
+    // Images pour avatar du pilote :
+    readonly pilotBadges = [
+        'JapanClem.png',
+        'PrincessClem.png',
+        'PsykéClem.png',
+        'GameClem.png',
+        'ClemWarhol.png',
+        'HastaLaVistaClem.png',
+        'ClemPotter.png',
+        'ClemToTheFuture.png',
+    ] as const;
+
+    pilotBadgeFile: string | null = null;
+
 
  constructor(
   private strategyStore: StrategyStoreService,
   private circuitStore: CircuitStoreService
 ) {
+
   this.cfg = this.strategyStore.get();
+  this.pilotBadgeFile = this.strategyStore.getPilotBadge();
+
 
   const circuit = this.circuitStore.getCircuit();
   if (circuit) {
@@ -261,6 +278,21 @@ export class StrategyPageComponent {
             };
         });
     }
+
+    get pilotBadgeUrl(): string | null {
+        return this.pilotBadgeFile
+            ? `assets/img/badges-pilote/${this.pilotBadgeFile}`
+            : null;
+    }
+
+
+    onPilotBadgeChange(fileName: string | null): void {
+        this.pilotBadgeFile = fileName;
+        this.strategyStore.setPilotBadge(fileName);
+        this.lastTsMs = null;
+    }
+
+
 
 
     // UTILITAIRES :
