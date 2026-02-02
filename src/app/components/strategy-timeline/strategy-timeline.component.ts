@@ -46,6 +46,13 @@ export class StrategyTimelineComponent implements AfterViewInit {
   /** Option MVP: autoriser chevauchements */
   @Input() allowOverlap = true;
 
+  /** Vitesse initiale (km/h) pour la simulation (utile pour les tours suivants) */
+  @Input() vInitKmh = 0;
+
+  /** Émet vInitKmh mis à jour */
+  @Output() vInitKmhChange = new EventEmitter<number>();
+
+
   private trackWidthPx = 1;
 
   // drag state
@@ -108,6 +115,16 @@ export class StrategyTimelineComponent implements AfterViewInit {
 
     this.setIntervals(next);
   }
+
+  setVInitKmh(raw: any): void {
+   const n = Number(raw);
+   const v = Number.isFinite(n) ? Math.max(0, n) : 0;
+   if (v === this.vInitKmh) return;
+   this.vInitKmh = v;
+   this.vInitKmhChange.emit(this.vInitKmh);
+ }
+
+
 
   // ---------- UI helpers ----------
   pxFromM(m: number): number {
@@ -223,6 +240,7 @@ export class StrategyTimelineComponent implements AfterViewInit {
     const cleaned = this.cleanIntervals(this.intervals);
     this.setIntervals(cleaned);
   }
+
 
   // ---------- Interval utilities ----------
   private setIntervals(next: Interval[], emit = true): void {

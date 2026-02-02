@@ -192,6 +192,8 @@
                     [minLenM]="5"
                     [intervals]="strategyIntervals"
                     (intervalsChange)="onIntervalsChange($event)"
+                    [vInitKmh]="vInitKmh"
+                    (vInitKmhChange)="onVInitKmhChange($event)"
                     [defaultDtSlope]="defaultDtSlope"
                     (defaultDtSlopeChange)="onDefaultDtSlopeChange($event)"
                     [defaultColor]="defaultColor"
@@ -206,7 +208,7 @@
                     <i class="bi bi-lightning me-2"></i>
                     Courant en fonction de la distance
                 </div>
-                <div class="card-body">                    
+                <div class="card-body ms-3 me-5">                    
                     <app-current-chart
                         [points]="r.points">
                     </app-current-chart>
@@ -219,7 +221,7 @@
                     <i class="bi bi-battery-half me-2"></i>
                     Énergie cumulée en fonction de la distance
                 </div>
-                <div class="card-body">
+                <div class="card-body ms-0 me-5">
                     <app-energy-chart
                         [points]="r.points">
                     </app-energy-chart>

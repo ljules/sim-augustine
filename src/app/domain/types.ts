@@ -69,6 +69,7 @@ export type Interval = {
 // PWM du moteur pour une simulation complète :
 export type StrategyConfig = {
   pwmOn?: number;                   // 0..1 pwmTime0to1
+  vInit?: number;                   // Vitesse initiale (km/h)
   defaultDtSlope?: number;          // Durée (s) pour passer PWM de 0 à 1
   defaultColor?: IntervalColor;     // Couleur par défaut pour l'intervalle
   intervals: Interval[];            // distances en m

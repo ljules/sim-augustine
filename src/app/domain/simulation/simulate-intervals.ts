@@ -65,13 +65,15 @@ function simulateFixedDt(
     strategy: IntervalStrategy,
     dt: number,
     tMax: number,
+    vInitMps: number,
     stepFn: StepFn
 ): SimResult {
     const points: SimPoint[] = [];
 
     let t = 0;      // Date (s)
     let s = 0;      // Position (m)
-    let v = 0;      // Vitesse (m/s)
+    // Vitesse initiale (m/s) : utile pour les tours suivants
+    let v = Math.max(0, Number.isFinite(vInitMps) ? vInitMps : 0);
     let eJ = 0;     // Energie (J)
 
     // Gestion rampe PWM locale par intervalle ON :
@@ -140,9 +142,10 @@ export function simulateEulerIntervals(
     vehicle: Vehicle,
     strategy: IntervalStrategy,
     dt: number,
-    tMax: number
+    tMax: number,
+    vInitMps = 0
 ): SimResult {
-    return simulateFixedDt(circuit, vehicle, strategy, dt, tMax, eulerStep);
+    return simulateFixedDt(circuit, vehicle, strategy, dt, tMax, vInitMps, eulerStep);
 }
 
 /**
@@ -153,7 +156,8 @@ export function simulateRK4Intervals(
     vehicle: Vehicle,
     strategy: IntervalStrategy,
     dt: number,
-    tMax: number
+    tMax: number,
+    vInitMps = 0
 ): SimResult {
-    return simulateFixedDt(circuit, vehicle, strategy, dt, tMax, rk4Step);
+    return simulateFixedDt(circuit, vehicle, strategy, dt, tMax, vInitMps, rk4Step);
 }

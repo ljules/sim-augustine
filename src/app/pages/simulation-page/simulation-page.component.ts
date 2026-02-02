@@ -38,9 +38,13 @@ type ComputeMode = 'live' | 'deferred';
   templateUrl: './simulation-page.component.html',
   styleUrl: './simulation-page.component.css',
 })
+
+
 export class SimulationPageComponent {
   dt = 0.2;
   tMax = 400;
+  vInitKmh = 0;
+
 
   lastMethod: SolverMethod | null = null;
   result: SimResult | null = null;
@@ -77,6 +81,7 @@ export class SimulationPageComponent {
     this.strategyStore.set(this.strategy);
 
     this.cfg = this.strategy;
+    this.vInitKmh = this.strategy.vInit ?? 0;
 
     // Expose dans le composant
     this.defaultDtSlope = this.strategy.defaultDtSlope ?? 0;
@@ -135,6 +140,24 @@ export class SimulationPageComponent {
     this.scheduleSimulationIfLive();
   }
 
+  onVInitKmhChange(v: number): void {
+    const n = Number(v);
+    const safe = Number.isFinite(n) ? Math.max(0, n) : 0;
+    if (safe === this.vInitKmh) return;
+
+    this.vInitKmh = safe;
+
+    // Persistance dans la stratégie (stockée en km/h)
+    this.strategy = { ...this.strategy, vInit: this.vInitKmh };
+    this.cfg = this.strategy;
+    this.strategyStore.set(this.strategy);
+
+    this.scheduleSimulationIfLive();
+  }
+
+
+
+
   // ----- Debounce live -----
 
   scheduleSimulationIfLive(): void {
@@ -145,6 +168,7 @@ export class SimulationPageComponent {
       this.simulate(this.solver);
     }, this.LIVE_DEBOUNCE_MS);
   }
+
 
   // ----- Simulation -----
 
@@ -189,10 +213,12 @@ export class SimulationPageComponent {
 
       const strategy = new IntervalStrategy(strategyCfg);
 
+      const vInitMps = (strategyCfg.vInit ?? 0) / 3.6;
+
       const res =
         method === 'Euler'
-          ? simulateEulerIntervals(circuit, vehicle, strategy, this.dt, this.tMax)
-          : simulateRK4Intervals(circuit, vehicle, strategy, this.dt, this.tMax);
+          ? simulateEulerIntervals(circuit, vehicle, strategy, this.dt, this.tMax, vInitMps)
+          : simulateRK4Intervals(circuit, vehicle, strategy, this.dt, this.tMax, vInitMps);
 
       this.result = res;
       this.strategyStore.setSimResult(res);
@@ -216,8 +242,11 @@ export class SimulationPageComponent {
       color: this.safeColor(iv.color, defaultColor),
     }));
 
+    const vInit = Number.isFinite(Number(cfg.vInit)) ? Math.max(0, Number(cfg.vInit)) : 0;
+
     return {
       ...cfg,
+      vInit,
       defaultDtSlope,
       defaultColor,
       intervals,

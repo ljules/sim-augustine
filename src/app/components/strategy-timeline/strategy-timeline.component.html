@@ -8,6 +8,23 @@
         </div>
       </div>
 
+
+      <!-- Vitesse initiale (km/h) -->
+      <div class="d-flex h6 align-items-center gap-2">
+        <label class="small text-muted m-0">Vitesse init (km/h)</label>
+        <input
+            type="number"
+            class="form-control form-control-sm dt-slope-input"
+            [ngModel]="vInitKmh"
+            (ngModelChange)="setVInitKmh($event)"
+            min="0"
+            step="0.1"
+            title="Vitesse initiale (km/h) au passage de la ligne de départ"
+            style="width: 6em; height: 1.8em;"
+        />
+      </div>
+
+
       <!-- Paramètres par défaut + bouton d'ajout -->
       <div class="d-flex gap-3 align-items-center flex-wrap">
         <!-- dtSlope par défaut -->
