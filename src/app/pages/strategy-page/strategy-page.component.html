@@ -167,15 +167,17 @@
         </div>           
 
         <!-- AFFICHAGE DU CIRCUIT -->
-        <div class="width: w-70">
-        <app-circuit-map-component
-            [s]="circuit?.s ?? []"
-            [utmX]="circuit?.utmX ?? []"
-            [utmY]="circuit?.utmY ?? []"
-            [intervals]="cfg.intervals"
-            [cursorDistance]="currentS"
-            [cursorAvatarUrl]="pilotBadgeUrl">
-        </app-circuit-map-component>
+        <div
+            class="width: w-70"
+            >
+            <app-circuit-map-component
+                [s]="circuit?.s ?? []"
+                [utmX]="circuit?.utmX ?? []"
+                [utmY]="circuit?.utmY ?? []"
+                [intervals]="cfg.intervals"
+                [cursorDistance]="currentS"
+                [cursorAvatarUrl]="pilotBadgeUrl">
+            </app-circuit-map-component>
         </div>
 
         <div class="mt-0 ms-4 mb-4">

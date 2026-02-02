@@ -32,8 +32,8 @@ export class CircuitMapComponent implements OnChanges {
   @Input() intervals: Interval[] = [];
 
   /** Dimensions viewBox */
-  @Input() width = 800;
-  @Input() height = 500;
+  @Input() width = 600;
+  @Input() height = 350;
   @Input() padding = 20;
 
   /** Décimation: garder un point tous les ~X mètres (0 => off) */

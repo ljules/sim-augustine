@@ -13,8 +13,9 @@
         <div class="card-header h6 fw-bold">
             <i class="bi bi-wrench-adjustable-circle"></i> Paramètres & contrôle simulation
         </div>
+
         <div class="card-body pt-2">
-            <div class="row " style="font-size: 0.85em;">
+            <div class="row " style="font-size: 0.70em;">
                 <!-- Champ de saisie du pas de calcul  -->
                 <div class="col-6 col-md-3">
                     <label class="form-label fw-bold">dt (s):</label><br>
@@ -93,43 +94,46 @@
                             <span class="d-none d-lg-block">Calculer</span>
                 </button>
 
-            </div>
+            </div> <!-- row -->
 
-        </div>
-    </div>
+        </div> <!-- Card-body -->
+    </div> <!-- Card -->
 
 
     <!-- AFFICHAGE DES RESULTATS  -->
     <div *ngIf="result as r" class="card">
-        <!-- Titre -->         
+
+        <!-- Entête -->
         <div class="card-header h6 fw-bold">
-        <div class="row"> 
-            <div class="col-6" >        
-            <i class="bi bi-activity"></i> Stratégie & Résultats <span class="badge text-bg-warning ms-2">{{ lastMethod
-                }}</span>
+            <div class="row"> 
+                <!-- Titre -->    
+                <div class="col-6">        
+                <i class="bi bi-activity"></i> Stratégie & Résultats <span class="badge text-bg-warning ms-2">{{ lastMethod
+                    }}</span>
+                </div>                
+
+                <!-- Sélecteur unité vitesse (km/h) ou (m/s) -->
+                <div class="col-6 d-flex flex-row-reverse" style="font-size: 0.7em;">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="unitSwitch" [(ngModel)]="speedUnit"
+                            [ngModelOptions]="{standalone: true}"
+                            (ngModelChange)="speedUnit = $event ? 'kmh' : 'mps'">
+                        <label class="form-check-label" for="unitSwitch">
+                            Afficher en km/h
+                        </label>
+                    </div>
+                </div>
             </div> 
-
-        <!-- Sélecteur unité vitesse (km/h) ou (m/s) -->
-        <div class="col-6 d-flex flex-row-reverse" style="font-size: 0.7em;">
-        <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="unitSwitch" [(ngModel)]="speedUnit"
-                [ngModelOptions]="{standalone: true}"
-                (ngModelChange)="speedUnit = $event ? 'kmh' : 'mps'">
-            <label class="form-check-label" for="unitSwitch">
-                Afficher en km/h
-            </label>
-        </div>
         </div>
 
-        </div> 
-        </div>
-        <div class="card-body">
+        <!-- CARD BODY -->
+        <div class="card-body fs-6 fw-light">
 
-            <div class="row g-3">
+            <!-- Tableau des résultats : -->
+            <div class="row g-3 ms-2">
                 <div class="col-md-3 col-6">
                     <div class="fw-semibold">Temps total</div>
                     <div>{{ totalTimeLabel }}</div>
-
                 </div>
 
                 <div class="col-md-3 col-6">
@@ -140,7 +144,6 @@
                 <div class="col-md-3 col-6">
                     <div class="fw-semibold">Vitesse moyenne</div>
                     <div>{{ vAvgLabel }}</div>
-
                 </div>
 
                 <div class="col-md-3 col-6">
@@ -150,30 +153,16 @@
                         <span class="text-muted">({{ energyWh | number:'1.2-2' }} Wh)</span>
                     </div>
                 </div>
+            </div> <!-- row -->             
 
-
-                <!-- Altitude -->
-                <!-- <div class="card mt-3">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">
-                            <i class="bi bi-graph-up me-2"></i>
-                            Altitude en fonction de la distance
-                        </h5>
-                        <app-altitude-chart [s]="circuitProfile!.s" [z]="circuitProfile!.z">
-                        </app-altitude-chart>
-                    </div>
-                </div> -->
-
-               
-
-                <!-- Double graphique vitesse & altitude  -->
-                <div class="card mt-3">
-                    <div class="card-body">
-                        <div class="card-title h6 mb-3">
-                            <i class="bi bi-graph-up me-2"></i>
-                            Vitesse & altitude en fonction de la distance
-                        </div>
-                        <app-dual-speed-altitude-chart
+            <!-- Double graphique vitesse & altitude  -->
+            <div class="card mt-3">
+                <div class="card-title h6 mt-2 mb-3 ms-2">
+                    <i class="bi bi-graph-up me-2"></i>
+                    Vitesse & altitude en fonction de la distance
+                </div>
+                <div class="card-body">                    
+                    <app-dual-speed-altitude-chart
                         [s]="circuitProfile!.s"
                         [z]="circuitProfile!.z"
                         [points]="r.points"
@@ -183,20 +172,20 @@
                         [distanceMax]="r.totalDistance"
                         [unit]="speedUnit"
                         [title]="'v(s) + z(s) — ' + (lastMethod ?? '')">                        
-                        </app-dual-speed-altitude-chart>
-                    </div>
+                    </app-dual-speed-altitude-chart>                    
                 </div>
-               
-                <!-- Graph PWM -->
-                <div class="card mt-3">
+            </div>
+            
+            <!-- Graph PWM -->
+            <div class="card mt-3">
                 <app-pwm-chart
                     [points]="result ? result.points : []"
                     [distanceMax]="distanceMax">
                 </app-pwm-chart>
-                </div>
+            </div>
 
-                <!-- Barre de stratégie -->
-                 <div class="card mt-3">
+            <!-- Barre de stratégie -->
+            <div class="card mt-3">
                 <app-strategy-timeline
                     [distanceMax]="distanceMax"
                     [snapM]="1"
@@ -208,46 +197,37 @@
                     [defaultColor]="defaultColor"
                     (defaultColorChange)="onDefaultColorChange($event)">
                 </app-strategy-timeline>
-                 </div>
+            </div>      
 
+
+            <!-- Courant -->
+            <div *ngIf="result as r" class="card mt-3 m-0">
+                <div class="card-title h6 mt-2 mb-3 ms-2">
+                    <i class="bi bi-lightning me-2"></i>
+                    Courant en fonction de la distance
                 </div>
-
-
-                <!-- Affichage de la courbe vitesse(distance): -->
-                <!-- <div class="border rounded p-3">
-                    
-                    <h5 class="card-title mb-3">
-                        <i class="bi bi-graph-up me-2"></i>
-                        Vitesse en fonction de la distance
-                    </h5>
-
-                    <app-speed-chart [points]="r.points" [intervals]="strategyIntervals" [distanceMax]="r.totalDistance"
-                        [title]="'v(s) — ' + (lastMethod ?? '')" [unit]="speedUnit">
-                    </app-speed-chart>
-                </div> -->
-
-
-                <!-- Courant -->
-                <div *ngIf="result as r" class="card mt-3 m-0">
-                    <div class="card-body">
-                        <div class="card-title h6 mb-3">
-                            <i class="bi bi-lightning me-2"></i>
-                            Courant en fonction de la distance
-                        </div>
-                        <app-current-chart [points]="r.points"></app-current-chart>
-                    </div>
+                <div class="card-body">                    
+                    <app-current-chart
+                        [points]="r.points">
+                    </app-current-chart>
                 </div>
-
-                <div *ngIf="result as r" class="mt-3 border rounded p-3">
-                    <div class="card-title h6 mb-3">
-                        <i class="bi bi-battery-half me-2"></i>
-                        Énergie cumulée en fonction de la distance
-                    </div>
-
-                    <app-energy-chart [points]="r.points"></app-energy-chart>
-                </div>
-
-
             </div>
-        </div>
-    </div>
+
+            <!-- Energie cumulée -->
+            <div *ngIf="result as r" class="card mt-3 p-3">
+                <div class="card-title h6 mb-3">
+                    <i class="bi bi-battery-half me-2"></i>
+                    Énergie cumulée en fonction de la distance
+                </div>
+                <div class="card-body">
+                    <app-energy-chart
+                        [points]="r.points">
+                    </app-energy-chart>
+                </div>
+            </div>
+
+
+        </div> <!-- card body -->        
+    </div> <!-- card -->
+
+</div> <!-- container -->

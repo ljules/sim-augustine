@@ -14,8 +14,6 @@ import { IntervalStrategy } from '../../domain/strategy/interval-strategy';
 import { simulateEulerIntervals, simulateRK4Intervals } from '../../domain/simulation/simulate-intervals';
 import type { SimResult, StrategyConfig, Interval, IntervalColor } from '../../domain/types';
 
-import { SpeedChartComponent } from '../../components/speed-chart/speed-chart.component';
-import { AltitudeChartComponent } from '../../components/altitude-chart/altitude-chart.component';
 import { CurrentChartComponent } from '../../components/current-chart/current-chart.component';
 import { EnergyChartComponent } from '../../components/energy-chart/energy-chart.component';
 import { StrategyTimelineComponent } from '../../components/strategy-timeline/strategy-timeline.component';
@@ -31,8 +29,6 @@ type ComputeMode = 'live' | 'deferred';
   imports: [
     CommonModule,
     FormsModule,
-    SpeedChartComponent,
-    AltitudeChartComponent,
     CurrentChartComponent,
     EnergyChartComponent,
     StrategyTimelineComponent,
@@ -249,13 +245,13 @@ export class SimulationPageComponent {
   get totalTimeLabel(): string | null {
     if (!this.result) return null;
     const t = this.result.totalTime;
-    return `${t.toFixed(1)} s (${this.formatMmSs(t)})`;
+    return `${this.formatMmSs(t)} (${t.toFixed(1)} s)`;
   }
 
   get vAvgLabel(): string | null {
     if (!this.result) return null;
     const v = this.result.vAvg;
     const kmh = v * 3.6;
-    return `${v.toFixed(2)} m/s (${kmh.toFixed(1)} km/h)`;
+    return `${kmh.toFixed(1)} km/h (${v.toFixed(2)} m/s)`;
   }
 }
