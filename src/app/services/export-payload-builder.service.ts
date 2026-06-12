@@ -82,7 +82,12 @@ export class ExportPayloadBuilderService {
   build(input: ExportPayloadBuilderInput): SimAugustineExportJson {
     const remainingRaceLaps = getRemainingRaceLaps(input.session.totalLaps);
     const simulation = this.buildSimulation(input.startLapResult, input.raceLapResult, remainingRaceLaps, input);
-    const ghost = this.buildGhost(input.startLapResult, input.raceLapResult, input.ghostStepS ?? this.DEFAULT_GHOST_STEP_S);
+    const ghost = this.buildGhost(
+      input.startLapResult,
+      input.raceLapResult,
+      input.ghostStepS ?? this.DEFAULT_GHOST_STEP_S,
+      input.circuit
+    );
 
     const payload: SimAugustineExportJson = {
       schemaVersion: '1.0.0',
@@ -212,7 +217,8 @@ export class ExportPayloadBuilderService {
   private buildGhost(
     startLapResult: SimResult | null | undefined,
     raceLapResult: SimResult | null | undefined,
-    stepS: number
+    stepS: number,
+    circuit: CircuitProfile
   ): ExportGhost | undefined {
     if (!startLapResult && !raceLapResult) return undefined;
 
@@ -222,12 +228,12 @@ export class ExportPayloadBuilderService {
         stepS,
         source: 'downsampled_simulation',
       },
-      startLap: startLapResult ? this.buildGhostPoints(startLapResult.points, stepS) : [],
-      raceLap: raceLapResult ? this.buildGhostPoints(raceLapResult.points, stepS) : [],
+      startLap: startLapResult ? this.buildGhostPoints(startLapResult.points, stepS, circuit) : [],
+      raceLap: raceLapResult ? this.buildGhostPoints(raceLapResult.points, stepS, circuit) : [],
     };
   }
 
-  private buildGhostPoints(points: SimPoint[], stepS: number): ExportGhostPoint[] {
+  private buildGhostPoints(points: SimPoint[], stepS: number, circuit: CircuitProfile): ExportGhostPoint[] {
     const safeStepS = Number.isFinite(stepS) && stepS > 0 ? stepS : this.DEFAULT_GHOST_STEP_S;
     const out: ExportGhostPoint[] = [];
     let nextTimeS = 0;
@@ -243,12 +249,92 @@ export class ExportPayloadBuilderService {
           pwm: point.pwm,
           currentA: point.i,
           energyJ: point.eElec,
+          ...this.interpolateCircuitCoordinates(circuit, point.s),
         });
         nextTimeS = point.t + safeStepS;
       }
     }
 
     return out;
+  }
+
+  private interpolateCircuitCoordinates(circuit: CircuitProfile, distanceM: number): Partial<ExportGhostPoint> {
+    const s = circuit.s ?? [];
+    if (!Number.isFinite(distanceM) || s.length < 1) return {};
+
+    const index = this.findCircuitSegmentIndex(s, distanceM);
+    if (index === null) return {};
+
+    const { i0, i1, ratio } = index;
+    const coords: Partial<ExportGhostPoint> = {};
+
+    const lat = this.interpolateOptionalSeries(circuit.lat, i0, i1, ratio);
+    const lon = this.interpolateOptionalSeries(circuit.lon, i0, i1, ratio);
+    if (lat !== undefined && lon !== undefined) {
+      coords.lat = lat;
+      coords.lon = lon;
+    }
+
+    const utmX = this.interpolateOptionalSeries(circuit.utmX, i0, i1, ratio);
+    const utmY = this.interpolateOptionalSeries(circuit.utmY, i0, i1, ratio);
+    if (utmX !== undefined && utmY !== undefined) {
+      coords.utmX = utmX;
+      coords.utmY = utmY;
+    }
+
+    return coords;
+  }
+
+  private findCircuitSegmentIndex(
+    s: number[],
+    distanceM: number
+  ): { i0: number; i1: number; ratio: number } | null {
+    const validIndexes = s
+      .map((value, index) => ({ value, index }))
+      .filter(item => Number.isFinite(item.value))
+      .sort((a, b) => a.value - b.value);
+
+    if (!validIndexes.length) return null;
+    if (validIndexes.length === 1 || distanceM <= validIndexes[0].value) {
+      const i = validIndexes[0].index;
+      return { i0: i, i1: i, ratio: 0 };
+    }
+
+    const last = validIndexes[validIndexes.length - 1];
+    if (distanceM >= last.value) {
+      return { i0: last.index, i1: last.index, ratio: 0 };
+    }
+
+    for (let i = 1; i < validIndexes.length; i++) {
+      const prev = validIndexes[i - 1];
+      const next = validIndexes[i];
+
+      if (distanceM <= next.value) {
+        const ds = next.value - prev.value;
+        const ratio = Math.abs(ds) > 1e-9 ? (distanceM - prev.value) / ds : 0;
+        return { i0: prev.index, i1: next.index, ratio: Math.max(0, Math.min(1, ratio)) };
+      }
+    }
+
+    return null;
+  }
+
+  private interpolateOptionalSeries(
+    values: number[] | undefined,
+    i0: number,
+    i1: number,
+    ratio: number
+  ): number | undefined {
+    if (!values?.length) return undefined;
+
+    const v0 = values[i0];
+    const v1 = values[i1];
+
+    if (!Number.isFinite(v0)) return undefined;
+    if (i0 === i1) return v0;
+    if (!Number.isFinite(v1)) return undefined;
+
+    return v0 + (v1 - v0) * ratio;
   }
 
   private firstFiniteSpeed(points: SimPoint[]): number | undefined {
