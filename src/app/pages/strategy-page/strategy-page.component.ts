@@ -237,35 +237,69 @@ export class StrategyPageComponent {
   }
 
   previewExportJson(): void {
+    this.exportPreviewJson = this.buildExportJsonString();
+  }
+
+  downloadExportJson(): void {
+    const json = this.exportPreviewJson ?? this.buildExportJsonString();
+    if (!json) return;
+
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+
+    a.href = url;
+    a.download = this.buildExportFileName();
+    a.click();
+
+    URL.revokeObjectURL(url);
+  }
+
+  private buildExportJsonString(): string | null {
     this.exportPreviewJson = null;
     this.exportPreviewError = null;
 
     if (!this.circuit) {
       this.exportPreviewError = 'Export impossible : aucun circuit chargé.';
-      return;
+      return null;
     }
 
     if (!this.startLapResult) {
       this.exportPreviewError = 'Export impossible : lance d abord la simulation du tour de départ.';
-      return;
+      return null;
     }
 
     if (!this.raceLapResult) {
       this.exportPreviewError = 'Export impossible : lance d abord la simulation des tours suivants.';
-      return;
+      return null;
     }
 
     try {
       const payload = this.exportPayloadBuilder.buildFromCurrentState();
-      this.exportPreviewJson = JSON.stringify(payload, null, 2);
+      const json = JSON.stringify(payload, null, 2);
+      this.exportPreviewJson = json;
+      return json;
     } catch (e: any) {
       this.exportPreviewError = e?.message ?? 'Export impossible : erreur inconnue.';
+      return null;
     }
   }
 
   closeExportPreview(): void {
     this.exportPreviewJson = null;
     this.exportPreviewError = null;
+  }
+
+  private buildExportFileName(): string {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mi = String(d.getMinutes()).padStart(2, '0');
+    const ss = String(d.getSeconds()).padStart(2, '0');
+
+    return `sim-augustine-session-${yyyy}${mm}${dd}-${hh}${mi}${ss}.json`;
   }
 
   onTimeSliderInput(value: string): void {

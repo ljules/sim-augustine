@@ -94,9 +94,14 @@
         <i class="bi bi-braces me-2"></i>
         Export Sim-Augustine / AndroGustine
       </div>
-      <button type="button" class="btn btn-outline-primary btn-sm" (click)="previewExportJson()">
-        Prévisualiser l'export JSON
-      </button>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="previewExportJson()">
+          Prévisualiser l'export JSON
+        </button>
+        <button type="button" class="btn btn-success btn-sm" (click)="downloadExportJson()">
+          Télécharger JSON
+        </button>
+      </div>
     </div>
 
     <div class="card-body" *ngIf="exportPreviewError || exportPreviewJson">
