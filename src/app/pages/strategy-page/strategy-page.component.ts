@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { StrategyStoreService } from '../../services/strategy-store.service';
 import { CircuitStoreService } from '../../services/circuit-store.service';
 import { RaceSessionStoreService } from '../../services/race-session-store.service';
+import { ExportPayloadBuilderService } from '../../services/export-payload-builder.service';
 
 import type { CircuitProfile, RaceSessionConfig, SimPoint, SimResult, StrategyConfig } from '../../domain/types';
 import { getRemainingRaceLaps } from '../../domain/session/race-session';
@@ -63,10 +64,14 @@ export class StrategyPageComponent {
   private rafId: number | null = null;
   private lastTsMs: number | null = null;
 
+  exportPreviewJson: string | null = null;
+  exportPreviewError: string | null = null;
+
   constructor(
     private strategyStore: StrategyStoreService,
     private circuitStore: CircuitStoreService,
-    private raceSessionStore: RaceSessionStoreService
+    private raceSessionStore: RaceSessionStoreService,
+    private exportPayloadBuilder: ExportPayloadBuilderService
   ) {
     this.sessionConfig = this.raceSessionStore.get();
     this.pilotBadgeFile = this.strategyStore.getPilotBadge();
@@ -229,6 +234,38 @@ export class StrategyPageComponent {
     this.pilotBadgeFile = fileName;
     this.strategyStore.setPilotBadge(fileName);
     this.lastTsMs = null;
+  }
+
+  previewExportJson(): void {
+    this.exportPreviewJson = null;
+    this.exportPreviewError = null;
+
+    if (!this.circuit) {
+      this.exportPreviewError = 'Export impossible : aucun circuit chargé.';
+      return;
+    }
+
+    if (!this.startLapResult) {
+      this.exportPreviewError = 'Export impossible : lance d abord la simulation du tour de départ.';
+      return;
+    }
+
+    if (!this.raceLapResult) {
+      this.exportPreviewError = 'Export impossible : lance d abord la simulation des tours suivants.';
+      return;
+    }
+
+    try {
+      const payload = this.exportPayloadBuilder.buildFromCurrentState();
+      this.exportPreviewJson = JSON.stringify(payload, null, 2);
+    } catch (e: any) {
+      this.exportPreviewError = e?.message ?? 'Export impossible : erreur inconnue.';
+    }
+  }
+
+  closeExportPreview(): void {
+    this.exportPreviewJson = null;
+    this.exportPreviewError = null;
   }
 
   onTimeSliderInput(value: string): void {

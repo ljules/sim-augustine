@@ -88,6 +88,34 @@
     </div>
   </div>
 
+  <div class="card mb-3">
+    <div class="card-header h6 fw-bold d-flex align-items-center justify-content-between">
+      <div>
+        <i class="bi bi-braces me-2"></i>
+        Export Sim-Augustine / AndroGustine
+      </div>
+      <button type="button" class="btn btn-outline-primary btn-sm" (click)="previewExportJson()">
+        Prévisualiser l'export JSON
+      </button>
+    </div>
+
+    <div class="card-body" *ngIf="exportPreviewError || exportPreviewJson">
+      <div *ngIf="exportPreviewError" class="alert alert-danger mb-0">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        {{ exportPreviewError }}
+      </div>
+
+      <div *ngIf="exportPreviewJson">
+        <div class="d-flex justify-content-end mb-2">
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="closeExportPreview()">
+            Fermer
+          </button>
+        </div>
+        <pre class="json-preview mb-0"><code>{{ exportPreviewJson }}</code></pre>
+      </div>
+    </div>
+  </div>
+
   <div class="card p-0 mb-3">
     <div class="card mt-0 p-3 bg-light">
       <div class="d-flex align-items-center justify-content-between">
