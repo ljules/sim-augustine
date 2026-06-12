@@ -56,6 +56,11 @@ export class RaceSessionStoreService {
     localStorage.removeItem(KEY);
   }
 
+  clearResults(): void {
+    this.startLapResult = null;
+    this.raceLapResult = null;
+  }
+
   setStartLapResult(result: SimResult | null): void {
     this.startLapResult = result;
   }

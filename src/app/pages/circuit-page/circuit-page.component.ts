@@ -10,6 +10,7 @@ import { StrategyStoreService } from '../../services/strategy-store.service';
 import type { StrategyConfig } from '../../domain/types';
 import { CircuitOsmMapComponent } from '../../components/circuit-osm-map/circuit-osm-map.component';
 import { CircuitRibbon3DComponent } from '../../components/circuit-ribbon3d/circuit-ribbon3d.component';
+import { SimAugustineJsonImportService } from '../../services/sim-augustine-json-import.service';
 
 
 @Component({
@@ -26,6 +27,7 @@ export class CircuitPageComponent {
     circuit: CircuitProfile | null = null;
     strategyConfig: StrategyConfig;
     error: string | null = null;
+    importSuccess: string | null = null;
 
     // Stats (calculées côté TS pour éviter Math.min/max dans le template)
     nbPoints: number | null = null;
@@ -55,6 +57,7 @@ export class CircuitPageComponent {
     constructor(
         private parser: CircuitCsvParserService,
         private strategyStore: StrategyStoreService,
+        private jsonImportService: SimAugustineJsonImportService,
         private store: CircuitStoreService
     ) {
         const existing = this.store.getCircuit();
@@ -67,6 +70,7 @@ export class CircuitPageComponent {
 
     async onFileSelected(ev: Event): Promise<void> {
         this.error = null;
+        this.importSuccess = null;
 
         const input = ev.target as HTMLInputElement;
         const file = input.files?.[0];
@@ -86,10 +90,35 @@ export class CircuitPageComponent {
         }
     }
 
+    async onJsonFileSelected(ev: Event): Promise<void> {
+        this.error = null;
+        this.importSuccess = null;
+
+        const input = ev.target as HTMLInputElement;
+        const file = input.files?.[0];
+        if (!file) return;
+
+        try {
+            const text = await file.text();
+            this.jsonImportService.importFromJsonText(text);
+
+            const imported = this.store.getCircuit();
+            if (imported) this.setCircuit(imported);
+
+            this.strategyConfig = this.strategyStore.get();
+            this.importSuccess = 'Session JSON importee : circuit, vehicule et strategies restaures. Relance la simulation depart puis la simulation n tours.';
+        } catch (e: unknown) {
+            this.error = e instanceof Error ? e.message : 'Erreur inconnue lors de l import JSON.';
+        } finally {
+            input.value = '';
+        }
+    }
+
     clear(): void {
         this.store.clear();
         this.circuit = null;
         this.error = null;
+        this.importSuccess = null;
         this.clearStats();
     }
 
