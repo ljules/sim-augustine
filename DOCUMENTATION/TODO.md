@@ -1,1 +1,0 @@
-Ajouter l'export csv des résultats et revalider les résultat avec la version Python.
