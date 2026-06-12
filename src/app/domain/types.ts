@@ -58,10 +58,10 @@ export type IntervalColor = 'yellow' | 'green' | 'blue'
 
 // Type objet de modélisation un intervalle de consigne PWM du moteur :
 export type Interval = { 
-    d: number;
-    f: number;
-    dtSlope: number;
-    color: IntervalColor;
+    d: number;                  // Position de départ de l'intervalle (m)
+    f: number;                  // Position de fin de l'intervalle (m)
+    dtSlope: number;            // Durée (s) de l'accélaration pour passer de 0 à 100 % du PWM
+    color: IntervalColor;       // Couleur du bouton associé à dtSlope (yellow, green ou blue)
 };
 
 
@@ -96,4 +96,31 @@ export type SimResult = {
   totalDistance: number;    // Distance total parcourue (m) durant la simulation
   totalEnergyJ: number;     // Energie totale consommée (J)
   vAvg: number;             // Vitesse moyenne
+};
+
+
+// Type objet représentant une session de course (Race Session) :
+// Configuration persistable d'une session de course :
+// - 1 tour de depart, decrit par startLapStrategy ;
+// - n tours de course suivants, tous decrits par raceLapStrategy.
+// Cette configuration ne contient aucun resultat de simulation.
+export type RaceSessionConfig = {
+  totalLaps: number;                    // Nombre total de tours d'une session de course
+  startLapStrategy: StrategyConfig;     // Stratégie associée au 1er tour de la session de course
+  raceLapStrategy: StrategyConfig;      // Stratégie associée au n tours de course
+};
+
+// Type objet réprésentant les résultats d'une session de course :
+// Resultats calcules d'une session de course.
+// Ces donnees sont volatiles : elles restent en memoire applicative et ne
+// doivent pas etre persistees dans localStorage. Apres un refresh, la page
+// Strategie doit continuer a demander de relancer une simulation.
+export type RaceSessionResult = {
+  startLapResult: SimResult;            // Résultats de la simulation pour le 1er tour
+  raceLapResult: SimResult;             // Résultat commun pour les n tours suivants
+  remainingRaceLaps: number;            // Nombre de tours de course apres le tour de depart : max(totalLaps - 1, 0)
+  // Totaux de session : tour de depart + remainingRaceLaps fois le tour de course suivant.
+  totalTime: number;                    // Durée totale
+  totalDistance: number;                // Distance totale
+  totalEnergyJ: number;                 // Energie totale consommée
 };
