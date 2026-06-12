@@ -1,14 +1,301 @@
 <div class="container py-3">
-  <div class="mb-4 h5">
-    <i class="bi bi-repeat me-2"></i>
-    <span class="fw-bold">Simulation n tours</span>
-  </div>
-
-  <div class="card">
-    <div class="card-body">
-      <p class="mb-0">
-        La logique de simulation des tours de course sera ajoutee dans une etape suivante.
-      </p>
+    <div class="mb-4 h5">
+        <i class="bi bi-repeat me-2"></i>
+        <span class="fw-bold">Simulation n tours</span> (Tour type des tours de course)
     </div>
-  </div>
+
+    <div *ngIf="error" class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+    </div>
+
+    <div *ngIf="!hasStartLapResult" class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        Lance d'abord la simulation depart pour connaitre la vitesse attendue des tours suivants.
+    </div>
+
+    <div class="card mt-3 mb-3">
+        <div class="card-header h6 fw-bold">
+            <i class="bi bi-list-ol"></i> Session de course
+        </div>
+
+        <div class="card-body">
+            <div class="row g-3 align-items-end" style="font-size: 0.85em;">
+                <div class="col-4 col-md-2">
+                    <label class="form-label fw-bold">Tours total :</label>
+                    <input
+                        class="form-control form-control-sm"
+                        type="number"
+                        [ngModel]="totalLaps"
+                        (ngModelChange)="onTotalLapsChange($event)"
+                        min="2"
+                        step="1"
+                        title="Nombre de tours total de la session de course."
+                        >
+                        
+                </div>
+                
+                <!-- <div class="col-6 col-md-2">
+                    <div class="fw-semibold">Tours restants :</div>
+                    <div>{{ remainingRaceLaps }}</div>
+                </div> -->
+
+                <div class="col-6 col-md-3">
+                    <div class="fw-semibold">Vitesse attendue :</div>
+                    <div>{{ expectedSpeedLabel }}</div>
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <div class="fw-semibold">Vitesse initiale :</div>
+                    <div [class.text-danger]="!isVInitConsistent" [class.fw-bold]="!isVInitConsistent">
+                        {{ vInitKmh | number:'1.0-2' }} km/h
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary btn-sm w-100"
+                        (click)="copyStartLapSpeed()"
+                        [disabled]="!hasStartLapResult">
+                        Copier vitesse 1er tour
+                    </button>
+                </div>
+            </div>
+
+            <div *ngIf="hasStartLapResult && !isVInitConsistent" class="alert alert-danger mt-3 mb-0">
+                La vitesse initiale des tours suivants ne correspond pas a la vitesse finale du tour de depart.
+            </div>
+
+            <div class="row g-3 mt-3 pt-3 border-top" style="font-size: 0.85em;">
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Temps total</div>
+                    <div>{{ sessionTotalTimeLabel }}</div>
+                </div>
+
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Distance totale :</div>
+                    <div>
+                        <span *ngIf="sessionTotalDistanceKm !== null; else noTotalDistance">
+                            {{ sessionTotalDistanceKm | number:'1.2-2' }} km
+                        </span>
+                        <ng-template #noTotalDistance>-</ng-template>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Vitesse moyenne globale :</div>
+                    <div>
+                        <span *ngIf="sessionAvgSpeedKmh !== null; else noAvgSpeed">
+                            {{ sessionAvgSpeedKmh | number:'1.1-1' }} km/h
+                        </span>
+                        <ng-template #noAvgSpeed>-</ng-template>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Energie totale :</div>
+                    <div>
+                        <span *ngIf="sessionTotalEnergyJ !== null; else noTotalEnergy">
+                            {{ sessionTotalEnergyJ | number:'1.0-0' }} J
+                        </span>
+                        <ng-template #noTotalEnergy>-</ng-template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-3 mb-3">
+        <div class="card-header h6 fw-bold">
+            <i class="bi bi-wrench-adjustable-circle"></i> Parametres & controle simulation
+        </div>
+
+        <div class="card-body pt-2">
+            <div class="row " style="font-size: 0.80em;">
+                <div class="col-6 col-md-3">
+                    <label class="form-label fw-bold">dt (s):</label><br>
+                    <input
+                        class="form-control"
+                        type="number"
+                        [(ngModel)]="dt"
+                        name="dt"
+                        style="width: 5em; height: 1.8em;"
+                        title="Intervalle de temps entre 2 pas de simulation (s).">
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <label class="form-label fw-bold">tMax (s):</label><br>
+                    <input
+                        class="form-control"
+                        type="number"
+                        [(ngModel)]="tMax"
+                        name="tMax"
+                        style="width: 5em; height: 1.8em;"
+                        title="Temps maxi pour que le vehicule realise le parcours complet du circuit.">
+                </div>
+
+                <div class="col-3 col-md-02">
+                    <label class="form-label fw-bold">Methode:</label><br>
+                    <div
+                        class="btn-group"
+                        role="group"
+                        aria-label="Methode de simulation"
+                        style="width: 5rm; height: 2.2em;">
+                        <input  type="radio"
+                                class="btn-check"
+                                name="solverRace"
+                                id="solverRaceEuler"
+                                [checked]="solver==='Euler'"
+                                (change)="solver='Euler'; scheduleSimulationIfLive()">
+                        <label  class="btn btn-outline-warning btn-sm"
+                                for="solverRaceEuler">Euler</label>
+
+                        <input  type="radio"
+                                class="btn-check"
+                                name="solverRace"
+                                id="solverRaceRk4"
+                                [checked]="solver==='RK4'"
+                                (change)="solver='RK4'; scheduleSimulationIfLive()">
+                        <label  class="btn btn-outline-warning btn-sm"
+                                for="solverRaceRk4">RK4</label>
+                    </div>
+                </div>
+
+                <div class="col-4 col-md-2">
+                    <label class="form-label fw-bold">
+                        <span class="d-xl-none">Cal. dyn. :</span>
+                        <span class="d-none d-xl-block">Calcul dynamique :</span>
+                    </label><br>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="modeRaceLive" [checked]="computeMode==='live'"
+                            (change)="computeMode = $any($event.target).checked ? 'live' : 'deferred'; scheduleSimulationIfLive()">
+                    </div>
+                </div>
+
+                <button class="btn btn-success btn-sm col-1 col-md-1 mt-2"
+                        style="height: 56px; width: 60px;"
+                        [disabled]="computeMode==='live'"
+                        (click)="simulate(solver)">
+                            <i class="bi bi-play-circle-fill fs-2"></i><br>
+                            <span class="d-none d-lg-block">Calculer</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="result as r" class="card">
+        <div class="card-header h6 fw-bold">
+            <div class="row">
+                <div class="col-6">
+                <i class="bi bi-activity"></i> Strategie & Resultats du tour type <span class="badge text-bg-warning ms-2">{{ lastMethod
+                    }}</span>
+                </div>
+
+                <div class="col-6 d-flex flex-row-reverse" style="font-size: 0.7em;">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="raceUnitSwitch" [(ngModel)]="speedUnit"
+                            [ngModelOptions]="{standalone: true}"
+                            (ngModelChange)="speedUnit = $event ? 'kmh' : 'mps'">
+                        <label class="form-check-label" for="raceUnitSwitch">
+                            Afficher en km/h
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body fs-6 fw-light">
+            <div class="row g-3 ms-2">
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Temps tour type</div>
+                    <div>{{ totalTimeLabel }}</div>
+                </div>
+
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Distance</div>
+                    <div>{{ r.totalDistance | number:'1.0-0' }} m</div>
+                </div>
+
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Vitesse moyenne</div>
+                    <div>{{ vAvgLabel }}</div>
+                </div>
+
+                <div class="col-md-3 col-6">
+                    <div class="fw-semibold">Energie tour type</div>
+                    <div>
+                        {{ r.totalEnergyJ | number:'1.0-0' }} J
+                        <span class="text-muted">({{ energyWh | number:'1.2-2' }} Wh)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-title h6 mt-2 mb-3 ms-2">
+                    <i class="bi bi-graph-up me-2"></i>
+                    Vitesse & altitude en fonction de la distance
+                </div>
+                <div class="card-body">
+                    <app-dual-speed-altitude-chart
+                        [s]="circuitProfile!.s"
+                        [z]="circuitProfile!.z"
+                        [points]="r.points"
+                        [intervals]="strategyIntervals"
+                        [xMin]="circuitProfile!.s[0]"
+                        [xMax]="circuitProfile!.s[circuitProfile!.s.length - 1]"
+                        [distanceMax]="r.totalDistance"
+                        [unit]="speedUnit"
+                        [title]="'v(s) + z(s) - ' + (lastMethod ?? '')">
+                    </app-dual-speed-altitude-chart>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <app-pwm-chart
+                    [points]="result ? result.points : []"
+                    [distanceMax]="distanceMax">
+                </app-pwm-chart>
+            </div>
+
+            <div class="card mt-3">
+                <app-strategy-timeline
+                    [distanceMax]="distanceMax"
+                    [snapM]="1"
+                    [minLenM]="5"
+                    [intervals]="strategyIntervals"
+                    (intervalsChange)="onIntervalsChange($event)"
+                    [vInitKmh]="vInitKmh"
+                    (vInitKmhChange)="onVInitKmhChange($event)"
+                    [defaultDtSlope]="defaultDtSlope"
+                    (defaultDtSlopeChange)="onDefaultDtSlopeChange($event)"
+                    [defaultColor]="defaultColor"
+                    (defaultColorChange)="onDefaultColorChange($event)">
+                </app-strategy-timeline>
+            </div>
+
+            <div *ngIf="result as r" class="card mt-3 m-0">
+                <div class="card-title h6 mt-2 mb-3 ms-2">
+                    <i class="bi bi-lightning me-2"></i>
+                    Courant en fonction de la distance
+                </div>
+                <div class="card-body ms-3 me-5">
+                    <app-current-chart
+                        [points]="r.points">
+                    </app-current-chart>
+                </div>
+            </div>
+
+            <div *ngIf="result as r" class="card mt-3 p-3">
+                <div class="card-title h6 mb-3">
+                    <i class="bi bi-battery-half me-2"></i>
+                    Energie cumulee en fonction de la distance
+                </div>
+                <div class="card-body ms-0 me-5">
+                    <app-energy-chart
+                        [points]="r.points">
+                    </app-energy-chart>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

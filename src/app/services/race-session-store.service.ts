@@ -21,6 +21,7 @@ const LEGACY_STRATEGY_KEY = 'strategyConfig';
 export class RaceSessionStoreService {
   private cache: RaceSessionConfig | null = null;
   private startLapResult: SimResult | null = null;
+  private raceLapResult: SimResult | null = null;
 
   get(): RaceSessionConfig {
     if (this.cache) return this.cache;
@@ -51,6 +52,7 @@ export class RaceSessionStoreService {
   clear(): void {
     this.cache = null;
     this.startLapResult = null;
+    this.raceLapResult = null;
     localStorage.removeItem(KEY);
   }
 
@@ -60,6 +62,14 @@ export class RaceSessionStoreService {
 
   getStartLapResult(): SimResult | null {
     return this.startLapResult;
+  }
+
+  setRaceLapResult(result: SimResult | null): void {
+    this.raceLapResult = result;
+  }
+
+  getRaceLapResult(): SimResult | null {
+    return this.raceLapResult;
   }
 
   private getLegacyStrategyConfig(): StrategyConfig | undefined {
