@@ -4,6 +4,7 @@ import type {
   Interval,
   IntervalColor,
   RaceSessionConfig,
+  SimResult,
   StrategyConfig,
 } from '../domain/types';
 import {
@@ -19,6 +20,7 @@ const LEGACY_STRATEGY_KEY = 'strategyConfig';
 })
 export class RaceSessionStoreService {
   private cache: RaceSessionConfig | null = null;
+  private startLapResult: SimResult | null = null;
 
   get(): RaceSessionConfig {
     if (this.cache) return this.cache;
@@ -48,7 +50,16 @@ export class RaceSessionStoreService {
 
   clear(): void {
     this.cache = null;
+    this.startLapResult = null;
     localStorage.removeItem(KEY);
+  }
+
+  setStartLapResult(result: SimResult | null): void {
+    this.startLapResult = result;
+  }
+
+  getStartLapResult(): SimResult | null {
+    return this.startLapResult;
   }
 
   private getLegacyStrategyConfig(): StrategyConfig | undefined {
