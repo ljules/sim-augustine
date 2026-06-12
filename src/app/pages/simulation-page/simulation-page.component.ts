@@ -254,7 +254,8 @@ export class SimulationPageComponent {
   }
 
   private safeColor(raw: any, fallback: IntervalColor): IntervalColor {
-    return raw === 'yellow' || raw === 'red' || raw === 'blue' ? raw : fallback;
+    if (raw === 'red') return 'green';
+    return raw === 'yellow' || raw === 'green' || raw === 'blue' ? raw : fallback;
   }
 
   // ----- Helpers UI -----

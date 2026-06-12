@@ -136,7 +136,7 @@ export class CircuitMapComponent implements OnChanges {
 
   private strokeForIntervalColor(c: IntervalColor | undefined): string {
     // Couleurs cohérentes avec Bootstrap (tu peux ajuster si tu as ton propre thème)
-    if (c === 'red') return '#dc3545';
+    if (c === 'green') return '#198754';
     if (c === 'blue') return '#0d6efd';
     // défaut : yellow
     return '#ffc107';

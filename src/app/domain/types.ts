@@ -53,7 +53,7 @@ export type VehicleFullConfig = {
 
 
 // Couleurs pour les stratégies d'accélération :
-export type IntervalColor = 'yellow' | 'red' | 'blue'
+export type IntervalColor = 'yellow' | 'green' | 'blue'
 
 
 // Type objet de modélisation un intervalle de consigne PWM du moteur :

@@ -112,7 +112,8 @@ export class StrategyStoreService {
   // Normalise une couleur vers le set autorisé.
   private normalizeColor(raw: any, fallback: IntervalColor): IntervalColor {
     const v = String(raw ?? '').toLowerCase();
-    if (v === 'yellow' || v === 'red' || v === 'blue') return v;
+    if (v === 'red') return 'green';
+    if (v === 'yellow' || v === 'green' || v === 'blue') return v;
     return fallback;
   }
 
