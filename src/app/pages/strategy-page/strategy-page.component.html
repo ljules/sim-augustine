@@ -1,275 +1,307 @@
-<div *ngIf="!simResult" class="alert alert-warning mt-3">
-  Aucun résultat de simulation disponible. Lance une simulation puis reviens sur cette page.
-</div>
-
-
 <div class="container py-3">
-   <!-- TITRE -->
-   <div>
-        <div class="mb-3 h5">
-            <i class="bi bi-stopwatch-fill me-2"></i>
-            Présentation de la Stratégie
-        </div>
-   </div>
+  <div class="mb-3 h5">
+    <i class="bi bi-stopwatch-fill me-2"></i>
+    Présentation de la Stratégie
+  </div>
 
-    <!-- Cadre animation simulation -->
-    <div class="card p-0">
-        
-        <!-- Entête animation -->
-        <div class="card mt-0 p-3 bg-light">
-            <div class="d-flex align-items-center justify-content-between ">
-                <div class="h6 fw-bold">
-                    <div>
-                    <i class="bi bi-camera-video me-2"></i>
-                    Animation de la simulation
-                    </div>
-                </div>
+  <div *ngIf="!hasSessionResults" class="alert alert-warning mt-3">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    Résultats de session incomplets. Lance la simulation du tour de départ, puis la simulation des tours suivants.
+  </div>
 
-                <!-- Bouton de contrôle de l'animation  -->
-                <div class="d-flex align-items-center gap-2">
-                    <button type="button" class="btn btn-secondary btn-sm" (click)="seekStart()">
-                        <i class="bi bi-rewind-circle-fill"></i>
-                    </button>
-
-                    <button type="button" class="btn btn-primary btn-sm" (click)="play()" [disabled]="isPlaying">
-                        <i class="bi bi-play-circle"></i>
-                    </button>
-
-                    <button type="button" class="btn btn-primary btn-sm" (click)="pause()" [disabled]="!isPlaying">
-                        <i class="bi bi-pause-circle"></i>
-                    </button>
-
-                    <button type="button" class="btn btn-secondary btn-sm" (click)="seekEnd()">
-                        <i class="bi bi-fast-forward-circle-fill"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Contrôle de la vitesse de lecture & Choix avatar pilote  -->
-            <div class="d-flex align-items-center mt-2 px-3">
-
-                <!-- Bloc gauche : avatars -->
-                <div class="d-flex flex-wrap gap-2 align-items-center">
-                    <div class="small text-muted fw-bold me-2">
-                        Avatar du pilote :
-                    </div>
-
-                    <!-- Aucun avatar -->
-                    <div
-                        class="pilot-badge none"
-                        [class.selected]="pilotBadgeFile === null"
-                        (click)="onPilotBadgeChange(null)"
-                        title="Aucun avatar">
-                        <span>◯</span>
-                    </div>
-
-                    <!-- Avatars -->
-                    <div
-                        *ngFor="let badge of pilotBadges"
-                        class="pilot-badge"
-                        [class.selected]="pilotBadgeFile === badge"
-                        (click)="onPilotBadgeChange(badge)"
-                        [title]="badge">
-                        <img
-                            [src]="'assets/img/badges-pilote/' + badge"
-                            alt="avatar pilote" />
-                    </div>
-                </div>
-
-                <!-- Bloc droite : vitesse (poussé à droite) -->
-                <div class="d-flex align-items-center gap-2 ms-auto">
-                    <div class="small text-muted fw-bold mb-0 d-none d-xl-block">
-                        Vitesse :
-                    </div>
-                    
-                    <select
-                        class="form-select form-select-sm"
-                        style="width: 70px;"
-                        [ngModel]="playbackRate"
-                        (ngModelChange)="playbackRate = $event"
-                        title="Vitesse de lecture">
-                        <option *ngFor="let r of playbackRates" [ngValue]="r">
-                            {{ r }}x
-                        </option>                        
-                    </select>                    
-                </div>
-
-        </div>
-
-            
-            <div class="container ms-2 pe-4">
-                <!-- Slider temps (scrub) -->
-                <div class="mt-2">
-                    <div class="d-flex align-items-center justify-content-between mb-1">
-                        <div>
-                            <i class="bi bi-clock me-2"></i>
-                            Temps : <strong>{{ formatMmSs(currentT) }}</strong>
-                        </div>
-                        <div class="text-muted">/ {{ formatMmSs(durationTForUi) }}</div>
-                    </div>
-
-                    <input  type="range"
-                            class="form-range"
-                            [min]="0"
-                            [max]="durationTForUi"
-                            step="0.05"
-                            [value]="currentT"
-                            (input)="onTimeSliderInput($any($event.target).value)"
-                    />
-                </div>
-
-                <div class="mt-2 d-flex flex-wrap gap-4">
-                    <!-- Distance -->
-                    <div class="small text-muted col-2">
-                        <div>Distance :</div>
-                        <div>{{ currentS | number:'1.0-0' }} m</div>
-                    </div>
-                        
-                    <!-- Vitesse -->
-                    <div class="col-2">
-                        <div class="small text-muted">Vitesse :</div>
-                        <div class="fw-semibold">
-                        <span *ngIf="currentSpeedKmh !== null; else noSpeed">
-                            {{ currentSpeedKmh | number:'1.0-1' }} km/h
-                        </span>
-                        <ng-template #noSpeed>—</ng-template>
-                        </div>
-                    </div>
-
-                    <!-- PWM -->
-                    <div class="col-4">
-                        <div style="min-width: 120px;">
-                            <div class="small text-muted d-flex justify-content-between">
-                                <span>PWM</span>
-                                <span class="fw-semibold">
-                                    <span *ngIf="currentPwmPercent !== null; else noPwm">
-                                    {{ currentPwmPercent | number:'1.0-0' }}%
-                                    </span>
-                                    <ng-template #noPwm>—</ng-template>
-                                </span>
-                            </div>
-
-                            <div class="progress bg-info-subtle " style="height: 10px;">
-                                <div
-                                    class="progress-bar bg-warning"
-                                    role="progressbar"
-                                    [style.width.%]="currentPwmPercent ?? 0"
-                                    [attr.aria-valuenow]="currentPwmPercent ?? 0"
-                                    aria-valuemin="0"
-                                    aria-valuemax="100"
-                                ></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>           
-
-        <!-- AFFICHAGE DU CIRCUIT -->
+  <div class="card mb-3">
+    <div class="card-header h6 fw-bold">
+      <i class="bi bi-person-circle me-2"></i>
+      Avatar du pilote
+    </div>
+    <div class="card-body">
+      <div class="d-flex flex-wrap gap-2 align-items-center">
         <div
-            class="width: w-70"
-            >
-            <app-circuit-map-component
-                [s]="circuit?.s ?? []"
-                [utmX]="circuit?.utmX ?? []"
-                [utmY]="circuit?.utmY ?? []"
-                [intervals]="cfg.intervals"
-                [cursorDistance]="currentS"
-                [cursorAvatarUrl]="pilotBadgeUrl">
-            </app-circuit-map-component>
+          class="pilot-badge none"
+          [class.selected]="pilotBadgeFile === null"
+          (click)="onPilotBadgeChange(null)"
+          title="Aucun avatar">
+          <span>○</span>
         </div>
 
-        <div class="mt-0 ms-4 mb-4">
-            <div class="text-muted fw-bold mb-2">
-                Légende :
+        <div
+          *ngFor="let badge of pilotBadges"
+          class="pilot-badge"
+          [class.selected]="pilotBadgeFile === badge"
+          (click)="onPilotBadgeChange(badge)"
+          [title]="badge">
+          <img
+            [src]="'assets/img/badges-pilote/' + badge"
+            alt="avatar pilote" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header h6 fw-bold">
+      <i class="bi bi-flag-fill me-2"></i>
+      Résumé session de course complète
+    </div>
+    <div class="card-body">
+      <div class="row g-3" style="font-size: 0.9em;">
+        <div class="col-md-2 col-6">
+          <div class="fw-semibold">Tours total</div>
+          <div>{{ totalLaps }}</div>
+        </div>
+        <div class="col-md-2 col-6">
+          <div class="fw-semibold">Tours suivants</div>
+          <div>{{ remainingRaceLaps }}</div>
+        </div>
+        <div class="col-md-2 col-6">
+          <div class="fw-semibold">Temps total</div>
+          <div>{{ sessionTotalTimeLabel }}</div>
+        </div>
+        <div class="col-md-2 col-6">
+          <div class="fw-semibold">Distance totale</div>
+          <div>
+            <span *ngIf="sessionDistanceKm !== null; else noDistance">
+              {{ sessionDistanceKm | number:'1.2-2' }} km
+            </span>
+            <ng-template #noDistance>-</ng-template>
+          </div>
+        </div>
+        <div class="col-md-2 col-6">
+          <div class="fw-semibold">Vitesse moyenne</div>
+          <div>
+            <span *ngIf="sessionAvgSpeedKmh !== null; else noAvg">
+              {{ sessionAvgSpeedKmh | number:'1.1-1' }} km/h
+            </span>
+            <ng-template #noAvg>-</ng-template>
+          </div>
+        </div>
+        <div class="col-md-2 col-6">
+          <div class="fw-semibold">Énergie totale</div>
+          <div>
+            <span *ngIf="sessionTotalEnergyJ !== null; else noEnergy">
+              {{ sessionTotalEnergyJ | number:'1.0-0' }} J
+            </span>
+            <ng-template #noEnergy>-</ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card p-0 mb-3">
+    <div class="card mt-0 p-3 bg-light">
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="h6 fw-bold">
+          <i class="bi bi-camera-video me-2"></i>
+          Animation du tour de départ
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" class="btn btn-secondary btn-sm" (click)="seekStart()">
+            <i class="bi bi-rewind-circle-fill"></i>
+          </button>
+
+          <button type="button" class="btn btn-primary btn-sm" (click)="play()" [disabled]="isPlaying || !startLapResult">
+            <i class="bi bi-play-circle"></i>
+          </button>
+
+          <button type="button" class="btn btn-primary btn-sm" (click)="pause()" [disabled]="!isPlaying">
+            <i class="bi bi-pause-circle"></i>
+          </button>
+
+          <button type="button" class="btn btn-secondary btn-sm" (click)="seekEnd()" [disabled]="!startLapResult">
+            <i class="bi bi-fast-forward-circle-fill"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center mt-2 px-3">
+        <div class="d-flex align-items-center gap-2 ms-auto">
+          <div class="small text-muted fw-bold mb-0 d-none d-xl-block">
+            Vitesse :
+          </div>
+
+          <select
+            class="form-select form-select-sm"
+            style="width: 70px;"
+            [ngModel]="playbackRate"
+            (ngModelChange)="playbackRate = $event"
+            title="Vitesse de lecture">
+            <option *ngFor="let r of playbackRates" [ngValue]="r">
+              {{ r }}x
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="container ms-2 pe-4">
+        <div class="mt-2">
+          <div class="d-flex align-items-center justify-content-between mb-1">
+            <div>
+              <i class="bi bi-clock me-2"></i>
+              Temps : <strong>{{ formatMmSs(currentT) }}</strong>
             </div>
+            <div class="text-muted">/ {{ formatMmSs(durationTForUi) }}</div>
+          </div>
 
-            <div class="d-flex flex-wrap gap-3">
-                <div class="ms-4">Accélérations (durée pente (s)) :</div>
-                <div                
-                *ngFor="let item of slopeLegend"
-                class="d-flex align-items-center gap-2"
-                >
-                <!-- pastille couleur -->
-                <span
-                    class="d-inline-block rounded"
-                    [style.background]="item.color"
-                    style="width: 24px; height: 12px;"
-                ></span>
+          <input
+            type="range"
+            class="form-range"
+            [min]="0"
+            [max]="durationTForUi"
+            step="0.05"
+            [value]="currentT"
+            [disabled]="!startLapResult"
+            (input)="onTimeSliderInput($any($event.target).value)" />
+        </div>
 
-                <!-- texte -->
-                <span class="small">
-                    : {{ item.dtSlope }} s
+        <div class="mt-2 d-flex flex-wrap gap-4">
+          <div class="small text-muted col-2">
+            <div>Distance :</div>
+            <div>{{ currentS | number:'1.0-0' }} m</div>
+          </div>
+
+          <div class="col-2">
+            <div class="small text-muted">Vitesse :</div>
+            <div class="fw-semibold">
+              <span *ngIf="currentSpeedKmh !== null; else noSpeed">
+                {{ currentSpeedKmh | number:'1.0-1' }} km/h
+              </span>
+              <ng-template #noSpeed>-</ng-template>
+            </div>
+          </div>
+
+          <div class="col-4">
+            <div style="min-width: 120px;">
+              <div class="small text-muted d-flex justify-content-between">
+                <span>PWM</span>
+                <span class="fw-semibold">
+                  <span *ngIf="currentPwmPercent !== null; else noPwm">
+                    {{ currentPwmPercent | number:'1.0-0' }}%
+                  </span>
+                  <ng-template #noPwm>-</ng-template>
                 </span>
+              </div>
+
+              <div class="progress bg-info-subtle" style="height: 10px;">
+                <div
+                  class="progress-bar bg-warning"
+                  role="progressbar"
+                  [style.width.%]="currentPwmPercent ?? 0"
+                  [attr.aria-valuenow]="currentPwmPercent ?? 0"
+                  aria-valuemin="0"
+                  aria-valuemax="100">
                 </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
 
+    <app-circuit-map-component
+      [s]="circuit?.s ?? []"
+      [utmX]="circuit?.utmX ?? []"
+      [utmY]="circuit?.utmY ?? []"
+      [intervals]="startLapStrategy.intervals"
+      [cursorDistance]="currentS"
+      [cursorAvatarUrl]="pilotBadgeUrl">
+    </app-circuit-map-component>
+  </div>
 
-    <!-- TABLEAU DES CONSIGNES PILOTE -->
-    <div class="card mt-3 p-0">
-        <div class="p-3 bg-body-tertiary">
-        <div class="align-items-center justify-content-between mb-2">
-            <div class="h5 fw-bold">
-                <div>
-                <i class="bi bi-list-check me-4"></i>
-                Consignes de pilotage
-                </div>
-            </div>
-            <div class="small text-muted" *ngIf="pilotRows.length">
-                {{ pilotRows.length }} rampe(s)
-            </div>
+  <div class="row g-3">
+    <div class="col-12 col-xl-6">
+      <div class="card h-100">
+        <div class="card-header h6 fw-bold">
+          <i class="bi bi-signpost-2-fill me-2"></i>
+          Tour de départ
         </div>
+        <div class="card-body p-0">
+          <app-circuit-map-component
+            [s]="circuit?.s ?? []"
+            [utmX]="circuit?.utmX ?? []"
+            [utmY]="circuit?.utmY ?? []"
+            [intervals]="startLapStrategy.intervals">
+          </app-circuit-map-component>
         </div>
-
-    <div *ngIf="!pilotRows.length" class="text-muted small m-3">
-        Aucun résultat de simulation disponible.
+        <div class="card-footer bg-white">
+          <div class="d-flex flex-wrap gap-3">
+            <div class="text-muted fw-bold">Légende :</div>
+            <div *ngFor="let item of startSlopeLegend" class="d-flex align-items-center gap-2">
+              <span class="d-inline-block rounded" [style.background]="item.color" style="width: 24px; height: 12px;"></span>
+              <span class="small">: {{ item.dtSlope }} s</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div *ngIf="pilotRows.length" class="table-responsive ms-4 me-4 mt-3">
+    <div class="col-12 col-xl-6">
+      <div class="card h-100">
+        <div class="card-header h6 fw-bold">
+          <i class="bi bi-repeat me-2"></i>
+          Tours suivants
+        </div>
+        <div class="card-body p-0">
+          <app-circuit-map-component
+            [s]="circuit?.s ?? []"
+            [utmX]="circuit?.utmX ?? []"
+            [utmY]="circuit?.utmY ?? []"
+            [intervals]="raceLapStrategy.intervals">
+          </app-circuit-map-component>
+        </div>
+        <div class="card-footer bg-white">
+          <div class="d-flex flex-wrap gap-3">
+            <div class="text-muted fw-bold">Légende :</div>
+            <div *ngFor="let item of raceSlopeLegend" class="d-flex align-items-center gap-2">
+              <span class="d-inline-block rounded" [style.background]="item.color" style="width: 24px; height: 12px;"></span>
+              <span class="small">: {{ item.dtSlope }} s</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt-3 p-0">
+    <div class="p-3 bg-body-tertiary">
+      <div class="h5 fw-bold mb-0">
+        <i class="bi bi-list-check me-4"></i>
+        Consignes de pilotage
+      </div>
+    </div>
+
+    <div class="p-3">
+      <div *ngIf="!sessionPilotRows.length" class="text-muted small">
+        Aucun résultat complet de session disponible. Lance la simulation du tour de départ puis la simulation des tours suivants.
+      </div>
+
+      <div *ngIf="sessionPilotRows.length" class="table-responsive">
         <table class="table table-sm align-middle">
-        <thead>
+          <thead>
             <tr>
-            <th>Début</th>
-            <th>Fin</th>
-            <th class="text-end">Vitesse début</th>
-            <th class="text-end">Vitesse fin</th>
-            <th class="text-center">Couleur rampe</th>
+              <th>N° tour</th>
+              <th>Début</th>
+              <th>Fin</th>
+              <th class="text-end">Vitesse début</th>
+              <th class="text-end">Vitesse fin</th>
+              <th class="text-center">Couleur rampe</th>
             </tr>
-        </thead>
-
-        <tbody>
-            <tr *ngFor="let r of pilotRows">
-            <td>{{ formatMmSs(r.startTime) }}</td>
-            <td>{{ formatMmSs(r.endTime) }}</td>
-
-            <td class="text-end">
-                <span *ngIf="r.startSpeedKmh !== null; else dash">
-                {{ r.startSpeedKmh | number:'1.0-1' }} km/h
-                </span>
-                <ng-template #dash>—</ng-template>
-            </td>
-
-            <td class="text-end">
-                <span *ngIf="r.endSpeedKmh !== null; else dash2">
-                {{ r.endSpeedKmh | number:'1.0-1' }} km/h
-                </span>
-                <ng-template #dash2>—</ng-template>
-            </td>
-
-            <td class="text-center">
-                <span
-                class="d-inline-block rounded"
-                [style.background]="r.color"
-                style="width: 28px; height: 10px;"
-                title="{{ r.color }}"
-                ></span>
-            </td>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of sessionPilotRows">
+              <td>{{ r.lapNo }}</td>
+              <td>{{ formatMmSs(r.startTime) }}</td>
+              <td>{{ formatMmSs(r.endTime) }}</td>
+              <td class="text-end">{{ r.startSpeedKmh | number:'1.0-1' }} km/h</td>
+              <td class="text-end">{{ r.endSpeedKmh | number:'1.0-1' }} km/h</td>
+              <td class="text-center">
+                <span class="d-inline-block rounded" [style.background]="r.color" style="width: 28px; height: 10px;"></span>
+              </td>
             </tr>
-        </tbody>
+          </tbody>
         </table>
+      </div>
     </div>
-    </div>
+  </div>
 </div>
