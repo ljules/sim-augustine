@@ -26,10 +26,27 @@
           </a>
         </li>
 
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/simulation" routerLinkActive="active">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle"
+             href="#"
+             role="button"
+             data-bs-toggle="dropdown"
+             aria-expanded="false"
+             routerLinkActive="active">
             <i class="bi bi-calculator-fill me-1"></i> Simulation
           </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" routerLink="/simulation/depart" routerLinkActive="active">
+                <i class="bi bi-play-circle-fill me-1"></i> Simulation depart
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" routerLink="/simulation/n-tours" routerLinkActive="active">
+                <i class="bi bi-repeat me-1"></i> Simulation n tours
+              </a>
+            </li>
+          </ul>
         </li>
 
         <li class="nav-item">
