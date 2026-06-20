@@ -114,6 +114,36 @@ export class SimulationRaceLapsPageComponent {
     return `${this.startLapFinalSpeedKmh.toFixed(2)} km/h`;
   }
 
+  get raceLapFinalSpeedKmh(): number | null {
+    return getFinalSpeedKmh(this.result);
+  }
+
+  get raceLapSpeedDeltaKmh(): number | null {
+    const finalSpeed = this.raceLapFinalSpeedKmh;
+    if (finalSpeed === null) return null;
+    return Math.abs(finalSpeed - this.vInitKmh);
+  }
+
+  get raceLapSpeedDeltaPercent(): number | null {
+    const delta = this.raceLapSpeedDeltaKmh;
+    if (delta === null) return null;
+
+    const reference = Math.abs(this.vInitKmh);
+    if (reference <= 1e-9) {
+      return delta <= 1e-9 ? 0 : 100;
+    }
+
+    return (delta / reference) * 100;
+  }
+
+  get raceLapSpeedDeltaBadgeClass(): string {
+    const percent = this.raceLapSpeedDeltaPercent;
+    if (percent === null) return 'text-bg-secondary';
+    if (percent <= 2) return 'text-bg-success';
+    if (percent <= 5) return 'text-bg-warning';
+    return 'text-bg-danger';
+  }
+
   onTotalLapsChange(v: number): void {
     const n = Number(v);
     const safe = Number.isFinite(n) ? Math.max(2, Math.floor(n)) : 2;

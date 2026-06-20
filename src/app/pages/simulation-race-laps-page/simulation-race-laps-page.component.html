@@ -53,7 +53,7 @@
                         style="width: 6em; height: 1.8em;"
                     />
                     <small [class.text-danger]="!isVInitConsistent" [class.fw-bold]="!isVInitConsistent">
-                    Vitesse attendue : {{ expectedSpeedLabel }} km/h
+                    Vitesse attendue : {{ expectedSpeedLabel }}
                     </small>                    
                 </div>
 
@@ -70,6 +70,26 @@
                         Copier vitesse
                     </button>
                     </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label class="form-label fw-bold">
+                        Ecart vitesses initiale & finale :
+                    </label>
+                    <div>
+                        <span
+                            *ngIf="raceLapSpeedDeltaKmh !== null && raceLapSpeedDeltaPercent !== null; else noRaceLapSpeedDelta"
+                            class="badge rounded-pill fs-6 px-3 py-2"
+                            [ngClass]="raceLapSpeedDeltaBadgeClass">
+                            {{ raceLapSpeedDeltaKmh | number:'1.2-2' }} km/h soit {{ raceLapSpeedDeltaPercent | number:'1.2-2' }} %
+                        </span>
+                        <ng-template #noRaceLapSpeedDelta>
+                            <span class="badge rounded-pill text-bg-secondary fs-6 px-3 py-2">Non disponible</span>
+                        </ng-template>
+                    </div>
+                    <small class="fst-italic">
+                        Doit idéalement être à 0 %
+                    </small>
                 </div>
             </div>
 
