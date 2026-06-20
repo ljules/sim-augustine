@@ -116,22 +116,47 @@ export class CircuitMapComponent implements OnChanges {
     const sorted = [...this.intervals].slice().sort((a, b) => a.d - b.d);
 
     for (const it of sorted) {
-      const d = Math.max(0, Math.min(it.d, it.f));
-      const f = Math.max(0, Math.max(it.d, it.f));
+      const pathD = this.pathForInterval(it);
+      if (!pathD) continue;
 
-      const i0 = this.lowerBoundS(this.projected, d);
-      const i1 = this.upperBoundS(this.projected, f);
-
-      if (i1 - i0 >= 2) {
-        const seg = this.projected.slice(i0, i1);
-        const pathD = this.toPath(seg);
-
-        this.highlightPaths.push({
-          d: pathD,
-          color: this.strokeForIntervalColor(it.color),
-        });
-      }
+      this.highlightPaths.push({
+        d: pathD,
+        color: this.strokeForIntervalColor(it.color),
+      });
     }
+  }
+
+  private pathForInterval(interval: Interval): string | null {
+    if (this.projected.length < 2) return null;
+
+    const minS = this.projected[0].s;
+    const maxS = this.projected[this.projected.length - 1].s;
+    const d = Math.max(minS, Math.min(interval.d, interval.f));
+    const f = Math.min(maxS, Math.max(interval.d, interval.f));
+
+    if (!Number.isFinite(d) || !Number.isFinite(f) || f <= d) return null;
+
+    const seg: Pt2[] = [
+      this.pointAtDistance(this.projected, d),
+      ...this.projected.filter(p => p.s > d && p.s < f),
+      this.pointAtDistance(this.projected, f),
+    ];
+
+    return this.toPath(this.removeConsecutiveDuplicates(seg));
+  }
+
+  private removeConsecutiveDuplicates(points: Pt2[]): Pt2[] {
+    const out: Pt2[] = [];
+
+    for (const point of points) {
+      const prev = out[out.length - 1];
+      if (prev && Math.abs(prev.x - point.x) < 1e-6 && Math.abs(prev.y - point.y) < 1e-6) {
+        continue;
+      }
+      out.push(point);
+    }
+
+    return out;
   }
 
   private strokeForIntervalColor(c: IntervalColor | undefined): string {
